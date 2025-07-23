@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Visualisasi{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <h1 class="text-3xl font-bold text-gray-800">Dashboard Nasional & Internasional</h1>
+    <p class="text-gray-600">Di sini kamu bisa melihat data berdasarkan Sekolah, Kabupaten/Kota, Provinsi, dan Negara.</p>
+
+    <!-- Filter Section -->
+    <div class="bg-white p-4 rounded-lg shadow-md">
+        <h3 class="font-semibold text-lg mb-4">Filter Data</h3>
+        
+        <!-- Form untuk filter, menggunakan method GET -->
+        <form method="GET" action="{% url 'dashboard:main_dashboard' %}" class="flex items-end space-x-4">
+            <div class="flex-grow">
+                <label for="provinsi" class="block text-sm font-medium text-gray-700">Provinsi</label>
+                <select id="provinsi" name="provinsi" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="">-- Semua Provinsi --</option>
+                    {% for province in all_provinces %}
+                        <option value="{{ province.id }}" {% if province.id == selected_province_id %}selected{% endif %}>
+                            {{ province.name|title }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-900 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors">
+                Filter
+            </button>
+            <a href="{% url 'dashboard:main_dashboard' %}" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">
+                Reset
+            </a>
+        </form>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="font-semibold text-lg mb-4">{{ chart_title }}</h3>
+        <div style="height: 400px;"> <!-- Beri tinggi agar chart terlihat baik -->
+            <canvas id="provinsiChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Load Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hapus chart lama jika ada, untuk mencegah bug saat filter
+        let chartStatus = Chart.getChart("provinsiChart");
+        if (chartStatus != undefined) {
+            chartStatus.destroy();
+        }
+
+        const ctx = document.getElementById('provinsiChart').getContext('2d');
+        
+        // FIX: Menghapus JSON.parse dan kutip tunggal.
+        // Data JSON dari Django sekarang langsung dijadikan objek JavaScript.
+        const chartLabels = {{ chart_labels|safe }};
+        const chartData = {{ chart_data|safe }};
+
+        const provinsiChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Jumlah Pendaftar',
+                    data: chartData,
+                    backgroundColor: 'rgba(30, 58, 138, 0.8)',
+                    borderColor: 'rgba(30, 58, 138, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // Membuat bar chart menjadi horizontal agar nama panjang muat
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

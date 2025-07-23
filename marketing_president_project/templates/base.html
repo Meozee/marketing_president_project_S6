@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Marketing Dashboard{% endblock %} - President University</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Custom styles jika diperlukan */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar-link.active {
+            background-color: #FBBF24; /* Warna kuning untuk link aktif */
+            color: #1E3A8A; /* Warna biru tua untuk teks */
+            font-weight: 600;
+        }
+        .sidebar-link.active i {
+            color: #1E3A8A;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Main Sidebar -->
+        <aside id="main-sidebar" class="w-64 bg-white text-gray-700 flex flex-col shadow-lg transition-transform duration-300">
+            <div class="h-20 flex items-center justify-center border-b">
+                <a href="{% url 'dashboard:home' %}" class="text-2xl font-bold text-blue-900">PRESIDENT UNIV</a>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <!-- Academic Dashboard Section -->
+                <div>
+                    <h3 class="px-4 mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">Academic Dashboard</h3>
+                    <a href="{% url 'dashboard:main_dashboard' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
+                        <i class="fas fa-chart-pie w-6 text-gray-500"></i>
+                        <span class="ml-3">Dashboard</span>
+                    </a>
+                    <a href="#" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
+                        <i class="fas fa-filter w-6 text-gray-500"></i>
+                        <span class="ml-3">Funnel Enrollment</span>
+                    </a>
+                    <a href="#" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
+                        <i class="fas fa-vial w-6 text-gray-500"></i>
+                        <span class="ml-3">Data Testing</span>
+                    </a>
+                </div>
+
+                <!-- Administration Section (HANYA UNTUK STAFF/ADMIN & SUPERADMIN) -->
+                {% if request.user.is_staff %}
+                <div class="pt-4">
+                    <h3 class="px-4 mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">Administration</h3>
+                    <a href="{% url 'users:approvals' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
+                        <i class="fas fa-user-check w-6 text-gray-500"></i>
+                        <span class="ml-3">Registrar Approvals</span>
+                    </a>
+                    <a href="{% url 'administration:logs' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
+                        <i class="fas fa-cogs w-6 text-gray-500"></i>
+                        <span class="ml-3">System Administration</span>
+                    </a>
+                </div>
+                {% endif %}
+            </nav>
+            <div class="px-4 py-6 border-t">
+                <h3 class="px-4 mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">Marketing Team</h3>
+                <a href="{% url 'core:about_us' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
+                   <i class="fas fa-users w-6 text-gray-500"></i>
+                   <span class="ml-3">About Our Team</span>
+               </a>
+               <a href="{% url 'users:logout' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
+                   <i class="fas fa-sign-out-alt w-6 text-gray-500"></i>
+                   <span class="ml-3">Logout</span>
+               </a>
+           </div>
+
+        </aside>
+
+        <!-- Profile Sidebar (awalnya tersembunyi) -->
+        <aside id="profile-sidebar" class="w-64 bg-white text-gray-700 flex-col shadow-lg transition-transform duration-300 hidden">
+            <div class="h-20 flex items-center justify-center border-b">
+                <h1 class="text-2xl font-bold text-blue-900">Profil User</h1>
+            </div>
+            <div class="flex-1 px-6 py-6 space-y-4">
+                <div>
+                    <label class="text-xs font-semibold text-gray-500">Username</label>
+                    <p class="text-lg">{{ logged_in_user.username }}</p>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-500">Nama</label>
+                    <p class="text-lg">{{ logged_in_user.get_full_name|default:"-" }}</p>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-500">Email</label>
+                    <p class="text-lg">{{ logged_in_user.email|default:"-" }}</p>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-500">Status</label>
+                    <p class="text-lg font-semibold text-blue-800">{{ user_role }}</p>
+                </div>
+            </div>
+            <div class="px-4 py-6 border-t">
+                <button onclick="toggleSidebar()" class="w-full flex items-center justify-center px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    <span>Kembali ke Menu</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col">
+            <header class="h-20 bg-white border-b flex items-center justify-end px-8">
+                <button onclick="toggleSidebar()" class="flex items-center space-x-2 p-2 bg-blue-900 text-white rounded-full hover:bg-blue-800">
+                    <i class="fas fa-user"></i>
+                    <span class="text-sm font-medium">{{ logged_in_user.username|capfirst }}</span>
+                </button>
+            </header>
+            <div class="flex-1 p-8 overflow-y-auto">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+<script>
+    function toggleSidebar() {
+        document.getElementById('main-sidebar').classList.toggle('hidden');
+        document.getElementById('profile-sidebar').classList.toggle('hidden');
+    }
+</script>
+</body>
+</html>

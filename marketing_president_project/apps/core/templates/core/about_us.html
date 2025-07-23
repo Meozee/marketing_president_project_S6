@@ -1,0 +1,715 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Our Team{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Tim Debugging Heroes 🦸‍♂️</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Dark "Neon Noir" Theme */
+            --bg-dark: #0a192f;
+            --bg-mid: #112240;
+            --bg-light: #233554;
+            --accent-pink: #ff79c6;
+            --accent-cyan: #64ffda;
+            --text-light: #ccd6f6;
+            --text-dark: #8892b0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+            min-height: 100vh;
+            color: var(--text-light);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Flying Plane: Right to Left */
+        .flying-plane {
+            position: fixed;
+            right: -400px;
+            z-index: 1000;
+            animation: flyAcrossRightToLeft 20s linear infinite;
+            display: flex;
+            align-items: center;
+        }
+
+        .plane-image {
+            width: 80px;
+            height: 60px;
+            object-fit: contain;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+            transform: scaleX(-1); /* Flip image to face left */
+        }
+
+        .plane-banner {
+            display: inline-block;
+            background: var(--accent-pink);
+            color: var(--bg-dark);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-right: 15px; /* Adjusted for right-to-left */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 0.8rem;
+            font-weight: bold;
+            white-space: nowrap;
+            animation: bounce 2s ease-in-out infinite, revealBanner 20s linear infinite;
+            transform-origin: left;
+        }
+        
+        @keyframes revealBanner {
+            0%, 10%, 90%, 100% { transform: scaleX(0); opacity: 0; }
+            15%, 85% { transform: scaleX(1); opacity: 1; }
+        }
+
+        @keyframes flyAcrossRightToLeft {
+            0% { 
+                right: -400px; 
+                top: var(--plane-top-position, 10%);
+            }
+            100% { 
+                right: 100vw; 
+                top: var(--plane-top-position, 10%);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: fixed;
+            font-family: 'Space Mono', monospace;
+            color: rgba(100, 255, 218, 0.5);
+            font-size: 0.9rem;
+            z-index: 1;
+            pointer-events: none;
+            animation: floatElement 10s ease-in-out infinite;
+        }
+
+        @keyframes floatElement {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+            50% { transform: translateY(-30px) rotate(5deg); opacity: 0.5; }
+        }
+        
+        /* Flying Bugs */
+        .flying-bug {
+            position: fixed;
+            font-size: 1.5rem;
+            z-index: 1;
+            pointer-events: none;
+            will-change: transform;
+            color: var(--accent-cyan);
+            text-shadow: 0 0 5px var(--accent-cyan);
+        }
+
+        @keyframes flyBug1 {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            20% { transform: translate(20vw, -30vh) rotate(30deg); }
+            40% { transform: translate(40vw, 10vh) rotate(-20deg); }
+            60% { transform: translate(60vw, -40vh) rotate(50deg); }
+            80% { transform: translate(80vw, 20vh) rotate(-10deg); }
+            90% { opacity: 1; }
+            100% { transform: translate(100vw, -10vh) rotate(0deg); opacity: 0; }
+        }
+
+        @keyframes flyBug2 {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            25% { transform: translate(-30vw, 20vh) rotate(-40deg); }
+            50% { transform: translate(20vw, 40vh) rotate(60deg); }
+            75% { transform: translate(-10vw, -20vh) rotate(10deg); }
+            90% { opacity: 1; }
+            100% { transform: translate(5vw, -5vh) rotate(0deg); opacity: 0; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            perspective: 500px;
+        }
+
+        .header h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: var(--text-light);
+            text-shadow: 3px 3px 0px var(--accent-pink), 6px 6px 0px var(--accent-cyan);
+            margin-bottom: 10px;
+            transition: transform 0.2s ease-out;
+        }
+
+        .header .subtitle {
+            font-size: 1.3rem;
+            color: var(--accent-pink);
+            font-style: italic;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .team-intro {
+            background: var(--bg-mid);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+            text-align: center;
+            animation: slideInFromLeft 1s ease-out;
+            border: 1px solid var(--bg-light);
+        }
+
+        @keyframes slideInFromLeft {
+            0% { transform: translateX(-100px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        .team-intro h2 {
+            color: var(--accent-cyan);
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            animation: wiggle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-2deg); }
+            75% { transform: rotate(2deg); }
+        }
+
+        .team-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            width: 300px;
+            height: 380px;
+            perspective: 1000px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .team-grid .flip-card:nth-child(1) { order: 1; }
+        .team-grid .flip-card:nth-child(2) { order: 2; }
+        .team-grid .flip-card:nth-child(3) { order: 3; }
+        .team-grid .flip-card:nth-child(4) { order: 4; }
+        .team-grid .flip-card:nth-child(5) { order: 5; }
+        .team-grid .flip-card:nth-child(6) { order: 6; }
+
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card-inner.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 1px solid var(--bg-light);
+        }
+        
+        .flip-card-front {
+            background: var(--bg-mid);
+            padding: 25px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flip-card-back {
+            background: linear-gradient(135deg, var(--accent-pink), var(--bg-mid));
+            color: white;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .fact-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            color: var(--accent-cyan);
+        }
+
+        .fact-text {
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        .member-photo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover; /* Memastikan gambar tidak gepeng */
+            margin: 0 auto 20px;
+            border: 5px solid var(--bg-mid);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background-color: var(--bg-light); /* Warna cadangan jika gambar gagal dimuat */
+        }
+
+        .member-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .member-role {
+            font-size: 1.1rem;
+            color: var(--accent-pink);
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .fun-section {
+            background: var(--bg-mid);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: slideInFromRight 1s ease-out;
+            position: relative;
+            border: 1px solid var(--bg-light);
+        }
+
+        @keyframes slideInFromRight {
+            0% { transform: translateX(100px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        .fun-section h2 {
+            color: var(--accent-cyan);
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 30px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, var(--bg-light), var(--bg-mid));
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            animation: pulse 2.5s ease-in-out infinite;
+            border: 1px solid var(--bg-dark);
+        }
+
+        .footer-content {
+            text-align: center;
+            margin-top: 80px;
+            padding: 40px 20px;
+            font-family: monospace;
+            color: #6a737d;
+            border-top: 1px dashed #3a4156;
+        }
+        .code-cat {
+            font-size: 16px;
+            line-height: 1.2;
+            white-space: pre;
+            color: #98a2b3;
+        }
+
+        .stat-item:hover {
+            transform: scale(1.1) rotate(-2deg);
+            animation-play-state: paused;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .stat-emoji {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            animation: rotate 5s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .quote-section {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-cyan));
+            color: var(--bg-dark);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 30px;
+            animation: slideUp 1s ease-out;
+        }
+
+        @keyframes slideUp {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .quote-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .programming-joke {
+            font-style: italic;
+            font-size: 1.2rem;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(10, 25, 47, 0.2);
+            border-radius: 10px;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* Konami Code Easter Egg */
+        .konami-activated {
+            animation: partyMode 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes partyMode {
+            0% { background: linear-gradient(135deg, #ff0000, #00ff00); }
+            25% { background: linear-gradient(135deg, #00ff00, #0000ff); }
+            50% { background: linear-gradient(135deg, #0000ff, #ffff00); }
+            75% { background: linear-gradient(135deg, #ffff00, #ff00ff); }
+            100% { background: linear-gradient(135deg, #ff00ff, #00ffff); }
+        }
+
+        @media (max-width: 1024px) {
+            .team-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2.5rem; }
+            .team-grid { grid-template-columns: 1fr; }
+            .container { padding: 15px; }
+            .flying-plane { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="flying-plane" id="flyingPlane">
+        <span class="plane-banner" id="plane-banner">99 bugs in the code, 99 bugs!</span>
+        <img src="https://via.placeholder.com/80x60/48bfe3/ffffff?text=✈️" alt="Flying Plane" class="plane-image" id="planeImage">
+    </div>
+
+    <div class="floating-element" style="top: 20%; left: 5%;">console.log("Hello World!");</div>
+    <div class="floating-element" style="top: 60%; right: 10%; animation-direction: reverse;">if (coffee) sleep(0);</div>
+    <div class="floating-element" style="top: 80%; left: 20%; animation-duration: 12s;">// TODO: Fix this later</div>
+    <div class="floating-element" style="top: 10%; right: 25%; animation-duration: 15s;">try { code() } catch(e) { stackoverflow() }</div>
+    <div class="floating-element" style="top: 90%; right: 15%; animation-duration: 8s; animation-direction: reverse;">404: Sleep Not Found</div>
+    <div class="floating-element" style="top: 40%; left: 15%; animation-duration: 11s;">const brain = null;</div>
+    <div class="floating-element" style="top: 5%; left: 50%; animation-duration: 13s;">while(true) { eat(); sleep(); code(); }</div>
+    <div class="floating-element" style="top: 70%; left: 45%; animation-duration: 9s;">print("hello world")</div>
+    <div class="floating-element" style="top: 50%; right: 40%; animation-duration: 14s; animation-direction: reverse;">SELECT * FROM 'procrastination'</div>
+    <div class="floating-element" style="top: 95%; left: 5%; animation-duration: 16s;">System.out.println("Java needs more coffee");</div>
+    <div class="floating-element" style="top: 30%; right: 70%; animation-duration: 18s;">git push --force</div>
+    <div class="floating-element" style="top: 55%; left: 30%; animation-duration: 10s; animation-direction: reverse;">import antigravity</div>
+
+
+    <div class="container">
+        <div class="header" id="main-header">
+            <h1>🚀 Tim Debugging Heroes 🚀</h1>
+            <p class="subtitle">Transforming Caffeine into Clean Code Since 2024!</p>
+        </div>
+
+        <div class="team-intro">
+            <h2>Meet Our Squad of Code Warriors! ⚔️</h2>
+            <p>
+                Kami adalah sekelompok programmer yang berhasil survive dari Stack Overflow University dan lulusan Google Academy! 
+                Dengan skill debugging level ninja dan kemampuan memahami error message yang cryptic, 
+                kami menciptakan AI yang bisa prediksi calon mahasiswa. Fun fact: 90% solusi kami datang saat mandi! 🛁✨
+            </p>
+        </div>
+
+        <div class="team-grid">
+            <div class="flip-card" data-order="1">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img src="https://via.placeholder.com/150/ff79c6/0a192f?text=Alex" alt="Foto Alex" class="member-photo">
+                        <div class="member-name">Alex "The Binary Wizard"</div>
+                        <div class="member-role">Chief Algorithm Alchemist</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="fact-title">FUN FACT</div>
+                        <p class="fact-text">Alex bisa menulis kode sambil tidur, tapi hasilnya selalu dalam bahasa Assembly.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flip-card" data-order="2">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img src="https://via.placeholder.com/150/64ffda/0a192f?text=Sarah" alt="Foto Sarah" class="member-photo">
+                        <div class="member-name">Sarah "SQL Princess"</div>
+                        <div class="member-role">Database Empress</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="fact-title">FUN FACT</div>
+                        <p class="fact-text">Pernah secara tidak sengaja menghapus database produksi, tapi berhasil mengembalikannya sebelum ada yang sadar.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flip-card" data-order="3">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img src="https://via.placeholder.com/150/ff79c6/0a192f?text=Mike" alt="Foto Mike" class="member-photo">
+                        <div class="member-name">Mike "CSS Picasso"</div>
+                        <div class="member-role">Frontend Artisan</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="fact-title">FUN FACT</div>
+                        <p class="fact-text">Menghabiskan 8 jam untuk membuat sebuah tombol terlihat sempurna, lalu mengubah desainnya lagi esok hari.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flip-card" data-order="4">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img src="https://via.placeholder.com/150/64ffda/0a192f?text=Lisa" alt="Foto Lisa" class="member-photo">
+                        <div class="member-name">Lisa "Data Sherlock"</div>
+                        <div class="member-role">Analytics Detective</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="fact-title">FUN FACT</div>
+                        <p class="fact-text">Bisa menemukan korelasi antara cuaca dan jumlah bug. Spoiler: Hujan = lebih banyak bug.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flip-card" data-order="5">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img src="https://via.placeholder.com/150/ff79c6/0a192f?text=Ryan" alt="Foto Ryan" class="member-photo">
+                        <div class="member-name">Ryan "AI Whisperer"</div>
+                        <div class="member-role">Machine Learning Guru</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="fact-title">FUN FACT</div>
+                        <p class="fact-text">Model AI-nya pernah memprediksi bahwa kucing akan menguasai dunia. Kami masih memantaunya.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flip-card" data-order="6">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img src="https://via.placeholder.com/150/64ffda/0a192f?text=Emma" alt="Foto Emma" class="member-photo">
+                        <div class="member-name">Emma "Bug Slayer"</div>
+                        <div class="member-role">Quality Assurance Ninja</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="fact-title">FUN FACT</div>
+                        <p class="fact-text">Punya indra keenam untuk menemukan bug. Cukup dengan melihat kode, dia bisa merasakan ada yang tidak beres.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fun-section">
+            <h2>Our Epic Journey Stats! 📊</h2>
+            <div class="stats-grid">
+                <div class="stat-item"><div class="stat-emoji">☕</div><div class="stat-text">247 cangkir kopi dikonsumsi<br><small>(dan 3 mesin kopi rusak)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">🌙</div><div class="stat-text">42 malam begadang<br><small>(record: 72 jam tanpa tidur)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">🐛</div><div class="stat-text">1,337 bugs dibasmi<br><small>(yes, itu bukan typo!)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">🍕</div><div class="stat-text">28 pizza sebagai fuel<br><small>(mostly pepperoni & margherita)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">💡</div><div class="stat-text">15 "Eureka!" moments<br><small>(11 terjadi di kamar mandi)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">🎯</div><div class="stat-text">97.3% accuracy achieved<br><small>(better than our GPA lol)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">📚</div><div class="stat-text">5,821 tab Stack Overflow<br><small>(dan masih buka)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">📧</div><div class="stat-text">64 rapat jadi email<br><small>(efisiensi level dewa)</small></div></div>
+            </div>
+            <div class="quote-section">
+                <h3>🎭 Daily Programming Wisdom 🎭</h3>
+                <div class="programming-joke" id="rotating-joke">"Why do programmers prefer dark mode? Because light attracts bugs! 🐛✨"</div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-content">
+        <div class="code-cat">  /\_/\<br> ( o.o )<br>  > ^ <<br> /  |  \<br>    |    \<br>    |     |<br>    |_____|<br>      \ /<br>       V</div>
+        <p>"It's not a bug, it's an undocumented feature." - Every Developer Ever<span class="blinking-cursor">_</span></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- JOKES & SOUNDS COLLECTIONS ---
+            const planeJokes = [
+                "99 bugs in the code, 99 bugs!",
+                "Why do Java developers wear glasses? Because they can't C#!",
+                "A SQL query walks up to two tables and asks: 'Can I join you?'",
+                "There are only 10 types of people in the world...",
+                "Why did the programmer quit his job? He didn't get arrays!"
+            ];
+
+            const rotatingJokes = [
+                "Why do programmers prefer dark mode? Because light attracts bugs!",
+                "Debugging is like being the detective in a crime movie where you are also the murderer!",
+                "Code never lies, comments sometimes do!",
+                "Real programmers count from 0!",
+                "Algorithm: A word used by programmers when they don't want to explain what they did!"
+            ];
+
+            const flipSounds = [
+                'https://www.soundjay.com/switch/switch-1.mp3',
+                'https://www.soundjay.com/switch/switch-2.mp3',
+                'https://www.soundjay.com/switch/switch-3.mp3',
+                'https://www.soundjay.com/switch/switch-4.mp3',
+                'https://www.soundjay.com/button/button-1.mp3',
+                'https://www.soundjay.com/button/button-2.mp3'
+            ];
+            
+            // --- FLYING PLANE LOGIC ---
+            const plane = document.getElementById('flyingPlane');
+            const planeBanner = document.getElementById('plane-banner');
+            let planeJokeIndex = 0;
+
+            plane.addEventListener('animationiteration', () => {
+                planeJokeIndex = (planeJokeIndex + 1) % planeJokes.length;
+                planeBanner.textContent = planeJokes[planeJokeIndex];
+            });
+
+            // --- ROTATING JOKE IN QUOTE SECTION ---
+            let rotatingJokeIndex = 0;
+            setInterval(() => {
+                const jokeElement = document.getElementById('rotating-joke');
+                jokeElement.style.opacity = '0';
+                setTimeout(() => {
+                    jokeElement.textContent = rotatingJokes[rotatingJokeIndex];
+                    jokeElement.style.opacity = '1';
+                    rotatingJokeIndex = (rotatingJokeIndex + 1) % rotatingJokes.length;
+                }, 500);
+            }, 5000);
+
+            // --- FLYING BUGS ---
+            const bugTypes = ['🐛', '🪲'];
+            function createFlyingBug() {
+                const bug = document.createElement('div');
+                bug.className = 'flying-bug';
+                bug.textContent = bugTypes[Math.floor(Math.random() * bugTypes.length)];
+                document.body.appendChild(bug);
+
+                const startX = Math.random() * window.innerWidth;
+                const startY = Math.random() * window.innerHeight;
+                const duration = Math.random() * 10 + 15;
+                const animationName = Math.random() > 0.5 ? 'flyBug1' : 'flyBug2';
+
+                bug.style.left = `${startX}px`;
+                bug.style.top = `${startY}px`;
+                bug.style.animation = `${animationName} ${duration}s linear infinite`;
+                bug.style.fontSize = `${Math.random() * 1 + 0.8}rem`;
+                bug.style.animationDelay = `${Math.random() * 5}s`;
+            }
+
+            for (let i = 0; i < 8; i++) {
+                createFlyingBug();
+            }
+
+            // --- FLIP CARD INTERACTION ---
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                let hoverTimeout;
+                const cardInner = card.querySelector('.flip-card-inner');
+
+                card.addEventListener('mouseenter', () => {
+                    hoverTimeout = setTimeout(() => {
+                        // Play a random sound
+                        try {
+                            const randomSound = flipSounds[Math.floor(Math.random() * flipSounds.length)];
+                            new Audio(randomSound).play();
+                        } catch (e) {
+                            console.error("Audio playback failed. User interaction might be needed.", e);
+                        }
+                        
+                        // Flip the card
+                        cardInner.classList.add('is-flipped');
+                    }, 1000); // Waktu tunda diubah menjadi 1 detik (1000 ms)
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    clearTimeout(hoverTimeout);
+                    cardInner.classList.remove('is-flipped');
+                });
+            });
+
+            // --- KONAMI CODE ---
+            let konamiCode = [];
+            const konamiSequence = [
+                'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+                'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+                'KeyB', 'KeyA'
+            ];
+
+            document.addEventListener('keydown', function(e) {
+                konamiCode.push(e.code);
+                if (konamiCode.length > konamiSequence.length) konamiCode.shift();
+                
+                if (konamiCode.join(',') === konamiSequence.join(',')) {
+                    document.body.classList.add('konami-activated');
+                    alert('🎉 KONAMI CODE ACTIVATED! Party mode ON! 🎊');
+                    
+                    setTimeout(() => {
+                        document.body.classList.remove('konami-activated');
+                    }, 5000);
+                    
+                    konamiCode = [];
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

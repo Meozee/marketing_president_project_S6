@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Beranda Dashboard{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold text-gray-800">
+        Selamat Datang, {{ user.username|capfirst }}!
+    </h1>
+    <p class="mt-2 text-gray-600">
+        Anda telah berhasil masuk ke Dashboard Pemasaran President University.
+    </p>
+    <p class="mt-1 text-gray-600">
+        Silakan gunakan menu di sebelah kiri untuk menavigasi aplikasi.
+    </p>
+</div>
+{% endblock %}
