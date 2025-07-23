@@ -1,7 +1,9 @@
 # apps/dashboard/urls.py
 
 from django.urls import path
-from .views import home_view, dashboard_view
+# Hanya impor fungsi yang ada dan digunakan
+from .views import dashboard_view, get_available_years, get_provinces, get_regencies, get_dashboard_data
+
 
 # app_name membantu membedakan URL antar aplikasi
 app_name = 'dashboard'

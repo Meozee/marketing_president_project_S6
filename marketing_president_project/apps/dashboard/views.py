@@ -1,119 +1,160 @@
-# apps/dashboard/views.py
+# views.py (FIXED)
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
-from .models import Eda20232024, Provinsi  # Pastikan model ini sudah ada
+from django.db.models import Count, Q
+from django.http import JsonResponse
+# FIX: Import all necessary models
+from .models import Eda20232024, Eda20222023, Provinsi, Regency, Countries
 import json
 
-@login_required
-def home_view(request):
-    """
-    View untuk menampilkan halaman utama/beranda.
-    """
-    context = {
-        'user': request.user
-    }
-    return render(request, 'dashboard/home.html', context)
-
+# ... (dashboard_view, get_available_years, get_provinces, get_regencies remain the same) ...
 @login_required
 def dashboard_view(request):
-    """
-    View untuk menampilkan dashboard visualisasi utama.
-    """
-    # Query untuk menghitung jumlah pendaftar per provinsi
-    # Kita menggunakan 'iddataprovinces' dari tabel eda_2023_2024
-    # dan menghubungkannya dengan tabel 'provinsi'
-    provinsi_data = (
-        Eda20232024.objects
-        .filter(iddataprovinces__isnull=False) # Hanya ambil data yang provinsinya terisi
-        .values('iddataprovinces') # Group by provinsi ID
-        .annotate(total=Count('iddataprovinces')) # Hitung jumlah pendaftar
-        .order_by('-total') # Urutkan dari yang terbanyak
-    )
+    return render(request, 'dashboard/dashboard.html')
 
-    # Ambil nama provinsi dari tabel Provinsi
-    provinsi_map = {p.id: p.name for p in Provinsi.objects.all()}
+@login_required
+def get_available_years(request):
+    years = [
+        {'value': '2022-2023', 'label': '2022/2023'},
+        {'value': '2023-2024', 'label': '2023/2024'}
+    ]
+    return JsonResponse({'years': years})
 
-    # Siapkan data untuk chart
-    labels = []
-    data = []
-    for item in provinsi_data:
-        # Cocokkan id provinsi dengan namanya
-        provinsi_name = provinsi_map.get(item['iddataprovinces'])
-        if provinsi_name:
-            labels.append(provinsi_name)
-            data.append(item['total'])
+@login_required
+def get_provinces(request):
+    provinces = list(Provinsi.objects.all().order_by('name').values('id', 'name'))
+    return JsonResponse({'provinces': provinces})
 
-    context = {
-        'chart_labels': json.dumps(labels),
-        'chart_data': json.dumps(data),
-    }
-
-    return render(request, 'dashboard/dashboard.html', context)
+@login_required
+def get_regencies(request):
+    province_id = request.GET.get('province_id')
+    if not province_id:
+        return JsonResponse({'regencies': []})
+    regencies = list(Regency.objects.filter(province_id=province_id).order_by('name').values('id', 'name'))
+    return JsonResponse({'regencies': regencies})
 
 
 @login_required
-def dashboard_view(request):
+def get_dashboard_data(request):
     """
-    View untuk menampilkan dashboard visualisasi utama,
-    sekarang dengan logika filter.
+    API endpoint utama untuk mengambil semua data dashboard yang dibutuhkan.
     """
-    # Ambil ID provinsi yang dipilih dari URL (GET parameter)
-    selected_province_id = request.GET.get('provinsi', None)
+    year = request.GET.get('year', '2023-2024')
+    data_type = request.GET.get('type', 'national')
+    
+    DataModel = Eda20232024 if year == '2023-2024' else Eda20222023
+    
+    response_data = {}
 
-    # Ambil semua provinsi untuk ditampilkan di dropdown filter
-    all_provinces = Provinsi.objects.all().order_by('name')
+    if data_type == 'national':
+        province_id = request.GET.get('province_id')
+        regency_id = request.GET.get('regency_id')
 
-    chart_title = "Jumlah Pendaftar per Provinsi"
-    labels = []
-    data = []
+        # FIX: Filter by country name via ForeignKey, not the incorrect integer field
+        queryset = DataModel.objects.filter(idcountrydata__countryname='INDONESIA')
+        
+        if province_id:
+            queryset = queryset.filter(iddataprovinces=province_id)
+        if regency_id:
+            queryset = queryset.filter(iddataregencies=regency_id)
 
-    if selected_province_id and selected_province_id.isdigit():
-        # --- JIKA PROVINSI DIPILIH ---
-        selected_province_id = int(selected_province_id)
-        selected_province = Provinsi.objects.get(id=selected_province_id)
-        chart_title = f"Jumlah Pendaftar per Kabupaten/Kota di {selected_province.name.title()}"
+        # --- Statistics ---
+        stats_agg = queryset.aggregate(
+            total_registrants=Count('idregistrantdata'),
+            total_paid=Count('idregistrantdata', filter=Q(ispaid=1)),
+            total_enrolled=Count('idregistrantdata', filter=Q(isenrolled=1))
+        )
+        enrollment_rate = 0
+        if stats_agg['total_paid'] > 0:
+            enrollment_rate = round((stats_agg['total_enrolled'] / stats_agg['total_paid']) * 100, 1)
 
-        # Query data per kabupaten/kota di provinsi yang dipilih
-        regency_data = (
-            Eda20232024.objects
-            .filter(iddataprovinces=selected_province_id)
-            .values('iddataregencies')
-            .annotate(total=Count('iddataregencies'))
-            .order_by('-total')
+        response_data['statistics'] = {
+            'total_registrants': stats_agg['total_registrants'],
+            'total_paid': stats_agg['total_paid'],
+            'total_enrolled': stats_agg['total_enrolled'],
+            'enrollment_rate': enrollment_rate
+        }
+
+        # --- Visualization & Table Data ---
+        if regency_id:
+            # Level Sekolah
+            table_rows = list(queryset.values('asalsekolah')
+                                      .annotate(pendaftar=Count('idregistrantdata'),
+                                                bayar=Count('idregistrantdata', filter=Q(ispaid=1)),
+                                                enroll=Count('idregistrantdata', filter=Q(isenrolled=1)))
+                                      .order_by('-pendaftar').filter(asalsekolah__isnull=False)[:50]) # Add limit for performance
+            response_data['table_data'] = {
+                'headers': ['Asal Sekolah', 'Pendaftar', 'Bayar', 'Enroll'],
+                'rows': [[row['asalsekolah'], row['pendaftar'], row['bayar'], row['enroll']] for row in table_rows]
+            }
+            response_data['visualization'] = {'type': 'none', 'data': []}
+
+        elif province_id:
+            # Level Kota
+            city_data = list(queryset.values('iddataregencies__name')
+                                     .annotate(value=Count('idregistrantdata'))
+                                     .order_by('-value').filter(iddataregencies__name__isnull=False))
+            response_data['table_data'] = {
+                'headers': ['Kota/Kabupaten', 'Jumlah Pendaftar'],
+                'rows': [[row['iddataregencies__name'], row['value']] for row in city_data]
+            }
+            response_data['visualization'] = {
+                'type': 'pie', # Changed from 'regencies' to 'pie' to match JS
+                'data': [{'name': row['iddataregencies__name'], 'value': row['value']} for row in city_data]
+            }
+
+        else:
+            # Level Provinsi
+            province_data = list(queryset.values('iddataprovinces__name')
+                                         .annotate(value=Count('idregistrantdata'))
+                                         .order_by('-value').filter(iddataprovinces__name__isnull=False))
+            response_data['table_data'] = {
+                'headers': ['Provinsi', 'Jumlah Pendaftar'],
+                'rows': [[row['iddataprovinces__name'], row['value']] for row in province_data]
+            }
+            top_10 = province_data[:10]
+            response_data['visualization'] = {
+                'type': 'bar',
+                'data': [{'name': row['iddataprovinces__name'], 'value': row['value']} for row in top_10]
+            }
+    
+    elif data_type == 'international':
+        # FIX: Exclude by country name via ForeignKey and handle nulls correctly
+        queryset = DataModel.objects.exclude(
+            Q(idcountrydata__countryname='INDONESIA') | Q(idcountrydata__isnull=True)
         )
         
-        regency_map = {r.id: r.name for r in Regency.objects.filter(province_id=selected_province_id)}
-        
-        for item in regency_data:
-            regency_name = regency_map.get(item['iddataregencies'])
-            if regency_name:
-                labels.append(regency_name.title())
-                data.append(item['total'])
-
-    else:
-        # --- JIKA TIDAK ADA PROVINSI YANG DIPILIH (TAMPILAN NASIONAL) ---
-        provinsi_data = (
-            Eda20232024.objects
-            .filter(iddataprovinces__isnull=False)
-            .values('iddataprovinces')
-            .annotate(total=Count('iddataprovinces'))
-            .order_by('-total')
+        stats_agg = queryset.aggregate(
+            total_registrants=Count('idregistrantdata'),
+            total_paid=Count('idregistrantdata', filter=Q(ispaid=1)),
+            total_enrolled=Count('idregistrantdata', filter=Q(isenrolled=1))
         )
-        provinsi_map = {p.id: p.name for p in all_provinces}
-        for item in provinsi_data:
-            provinsi_name = provinsi_map.get(item['iddataprovinces'])
-            if provinsi_name:
-                labels.append(provinsi_name.title())
-                data.append(item['total'])
+        enrollment_rate = 0
+        if stats_agg['total_paid'] > 0:
+            enrollment_rate = round((stats_agg['total_enrolled'] / stats_agg['total_paid']) * 100, 1)
 
-    context = {
-        'chart_title': chart_title,
-        'chart_labels': json.dumps(labels),
-        'chart_data': json.dumps(data),
-        'all_provinces': all_provinces,
-        'selected_province_id': selected_province_id,
-    }
+        response_data['statistics'] = {
+            'total_registrants': stats_agg['total_registrants'],
+            'total_paid': stats_agg['total_paid'],
+            'total_enrolled': stats_agg['total_enrolled'],
+            'enrollment_rate': enrollment_rate
+        }
 
-    return render(request, 'dashboard/dashboard.html', context)
+        # FIX: Group by country name from the related table
+        country_data = list(queryset.values('idcountrydata__countryname')
+                                    .annotate(value=Count('idregistrantdata'))
+                                    .order_by('-value').filter(idcountrydata__countryname__isnull=False))
+        
+        # FIX: Use the correct field name 'idcountrydata__countryname'
+        response_data['table_data'] = {
+            'headers': ['Negara', 'Jumlah Pendaftar'],
+            'rows': [[row['idcountrydata__countryname'], row['value']] for row in country_data]
+        }
+        top_15 = country_data[:15]
+        response_data['visualization'] = {
+            'type': 'bar',
+            'data': [{'name': row['idcountrydata__countryname'], 'value': row['value']} for row in top_15]
+        }
+
+    return JsonResponse(response_data)

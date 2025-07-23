@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/home/meoze/Documents/Mini Projects/new/env/bin/python3" "$0" "$@"
+'''exec' "/home/meoze/Documents/Mini Projects/marketing_president_project_S6/env/bin/python3" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re
