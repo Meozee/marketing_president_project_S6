@@ -53,12 +53,18 @@ def api_get_national_data(request):
     regency_id = request.GET.get('regency_id')
     
     DataModel = Eda20232024 if year == '2023-2024' else Eda20222023
-    
-    queryset = DataModel.objects.filter(nationality='INDONESIA')
-    if province_id:
-        queryset = queryset.filter(iddataprovinces=province_id)
-    if regency_id:
-        queryset = queryset.filter(iddataregencies=regency_id)
+
+    try:
+        queryset = DataModel.objects.filter(nationality=105)
+
+        if province_id:
+            queryset = queryset.filter(iddataprovinces=int(province_id))
+
+        if regency_id:
+            queryset = queryset.filter(iddataregencies=int(regency_id))
+
+    except ValueError:
+        queryset = DataModel.objects.none()  # jaga-jaga kalau param tidak valid
 
     # --- Statistics ---
     stats_agg = queryset.aggregate(
@@ -87,24 +93,36 @@ def api_get_national_data(request):
                                    .annotate(pendaftar=Count('idregistrantdata'),
                                              bayar=Count('idregistrantdata', filter=Q(ispaid=1)),
                                              enroll=Count('idregistrantdata', filter=Q(isenrolled=1)))
-                                   .order_by('-pendaftar').filter(asalsekolah__isnull=False))
-        table_data = {'headers': ['Asal Sekolah', 'Pendaftar', 'Bayar', 'Enroll'], 'rows': [[row['asalsekolah'], row['pendaftar'], row['bayar'], row['enroll']] for row in school_data]}
+                                   .order_by('-pendaftar')
+                                   .filter(asalsekolah__isnull=False))
+        table_data = {
+            'headers': ['Asal Sekolah', 'Pendaftar', 'Bayar', 'Enroll'],
+            'rows': [[row['asalsekolah'], row['pendaftar'], row['bayar'], row['enroll']] for row in school_data]
+        }
         visualization = {'type': 'none', 'data': []}
 
     elif province_id:
         # Level Kota
         city_data = list(queryset.values('iddataregencies__name')
                                  .annotate(value=Count('idregistrantdata'))
-                                 .order_by('-value').filter(iddataregencies__name__isnull=False))
-        table_data = {'headers': ['Kota/Kabupaten', 'Jumlah Pendaftar'], 'rows': [[row['iddataregencies__name'], row['value']] for row in city_data]}
+                                 .order_by('-value')
+                                 .filter(iddataregencies__name__isnull=False))
+        table_data = {
+            'headers': ['Kota/Kabupaten', 'Jumlah Pendaftar'],
+            'rows': [[row['iddataregencies__name'], row['value']] for row in city_data]
+        }
         visualization = {'type': 'pie', 'data': [{'name': row['iddataregencies__name'], 'value': row['value']} for row in city_data]}
 
     else:
         # Level Provinsi
         province_data = list(queryset.values('iddataprovinces__name')
                                      .annotate(value=Count('idregistrantdata'))
-                                     .order_by('-value').filter(iddataprovinces__name__isnull=False))
-        table_data = {'headers': ['Provinsi', 'Jumlah Pendaftar'], 'rows': [[row['iddataprovinces__name'], row['value']] for row in province_data]}
+                                     .order_by('-value')
+                                     .filter(iddataprovinces__name__isnull=False))
+        table_data = {
+            'headers': ['Provinsi', 'Jumlah Pendaftar'],
+            'rows': [[row['iddataprovinces__name'], row['value']] for row in province_data]
+        }
         top_10 = province_data[:10]
         visualization = {'type': 'bar', 'data': [{'name': row['iddataprovinces__name'], 'value': row['value']} for row in top_10]}
     
@@ -114,23 +132,46 @@ def api_get_national_data(request):
         'table_data': table_data,
     })
 
+
+from .models import Countries
+
 @login_required
 def api_get_international_data(request):
-    """ API: Mengambil semua data untuk tab Internasional. """
     year = request.GET.get('year', '2023-2024')
     DataModel = Eda20232024 if year == '2023-2024' else Eda20222023
-    
-    queryset = DataModel.objects.exclude(Q(nationality='INDONESIA') | Q(nationality__isnull=True))
-    
-    country_data = list(queryset.values('nationality')
-                                .annotate(value=Count('idregistrantdata'))
-                                .order_by('-value'))
-    
-    table_data = {'headers': ['Negara', 'Jumlah Pendaftar'], 'rows': [[row['nationality'], row['value']] for row in country_data]}
-    top_15 = country_data[:15]
-    visualization = {'type': 'bar', 'data': [{'name': row['nationality'], 'value': row['value']} for row in top_15]}
+
+    queryset = DataModel.objects.exclude(Q(nationality=105) | Q(nationality__isnull=True))
+
+    country_counts = list(queryset.values('nationality')
+                                    .annotate(value=Count('idregistrantdata'))
+                                    .order_by('-value'))
+
+    # Ambil mapping dari ID -> nama dan kode negara
+    country_lookup = {
+        c.idcountrydata: {'name': c.countryname, 'code': c.countrycode}
+        for c in Countries.objects.all()
+    }
+
+    table_rows = []
+    map_data = []
+
+    for row in country_counts:
+        cid = row['nationality']
+        info = country_lookup.get(cid)
+        if info and info['code']:
+            map_data.append({
+                'code': info['code'],  # Misal 'VN'
+                'value': row['value']
+            })
+            table_rows.append([info['name'], row['value']])  # Misal 'Vietnam'
 
     return JsonResponse({
-        'visualization': visualization,
-        'table_data': table_data,
+        'visualization': {
+            'type': 'map',
+            'data': map_data
+        },
+        'table_data': {
+            'headers': ['Negara', 'Jumlah Pendaftar'],
+            'rows': table_rows
+        }
     })

@@ -30,6 +30,7 @@ class Regency(models.Model):
 
 class Countries(models.Model):
     idcountrydata = models.IntegerField(primary_key=True)
+    countrycode = models.CharField(max_length=2, blank=True, null=True)  # Tambahkan ini!
     countryname = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -39,6 +40,7 @@ class Countries(models.Model):
 
     def __str__(self):
         return self.countryname
+
 
 # Model utama dengan tipe field yang sudah disesuaikan (IntegerField untuk ispaid/isenrolled)
 class Eda20232024(models.Model):

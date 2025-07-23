@@ -48,10 +48,16 @@
         </div>
         <div class="tab-pane fade" id="international" role="tabpanel">
             <div class="filter-section"><div class="row align-items-end"><div class="col-md-4"><label for="intlYearSelect" class="form-label">Tahun Data</label><select class="form-select" id="intlYearSelect"><option value="">Pilih Tahun</option></select></div></div></div>
-            <div id="international-content" class="d-none"><div class="chart-container"><h5 class="mb-3">Top 15 Negara Pendaftar</h5><canvas id="intlChartCanvas"></canvas></div><div class="table-container"><h5 class="mb-3">Data per Negara</h5><div class="table-responsive"><table class="table table-striped"><thead><tr id="intlTableHead"></tr></thead><tbody id="intlTableBody"></tbody></table></div></div></div>
+            <div id="international-content" class="d-none"><div class="chart-container"><h5 class="mb-3">Top 15 Negara Pendaftar</h5><div id="intlMapContainer" style="height: 500px; width: 100%;"></div>
+</div><div class="table-container"><h5 class="mb-3">Data per Negara</h5><div class="table-responsive"><table class="table table-striped"><thead><tr id="intlTableHead"></tr></thead><tbody id="intlTableBody"></tbody></table></div></div></div>
         </div>
     </div>
 </div>
+
+<!-- Highcharts MAPS -->
+<script src="https://code.highcharts.com/maps/highmaps.js"></script>
+<script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/mapdata/custom/world.js"></script>
 
 <script>
     let nationalChart, intlChart, paymentChart, enrollmentChart;
@@ -125,12 +131,40 @@
         });
     }
     function updateInternationalVisualization(viz) {
-        intlChart = renderChart(intlChart, 'intlChartCanvas', {
-            type: 'bar',
-            data: { labels: viz.data.map(d => d.name), datasets: [{ label: 'Pendaftar', data: viz.data.map(d => d.value), backgroundColor: '#36A2EB' }] },
-            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
-        });
-    }
+    Highcharts.mapChart('intlMapContainer', {
+        chart: {
+            map: 'custom/world'
+        },
+        title: {
+            text: 'Distribusi Pendaftar Internasional'
+        },
+        subtitle: {
+            text: 'Berdasarkan negara asal'
+        },
+        colorAxis: {
+            min: 0,
+            stops: [
+                [0, '#EFEFFF'],
+                [0.5, '#447BB2'],
+                [1, '#000022']
+            ]
+        },
+        series: [{
+            data: viz.data, // format: [{ code: 'ID', value: 50 }, { code: 'VN', value: 12 }, ... ]
+            name: 'Jumlah Pendaftar',
+            joinBy: ['iso-a2', 'code'],  // penting!
+            states: {
+                hover: {
+                    color: '#BADA55'
+                }
+            },
+            tooltip: {
+                pointFormat: '{point.name}: <b>{point.value} pendaftar</b>'
+            }
+        }]
+    });
+}
+
     function updateBottomCharts(stats) {
         paymentChart = renderChart(paymentChart, 'paymentChart', { type: 'doughnut', data: { labels: ['Sudah Bayar', 'Belum Bayar'], datasets: [{ data: [stats.total_paid, stats.total_registrants - stats.total_paid], backgroundColor: ['#4BC0C0', '#FF6384'] }] } });
         enrollmentChart = renderChart(enrollmentChart, 'enrollmentChart', { type: 'doughnut', data: { labels: ['Sudah Enroll', 'Belum Enroll (dari yg sudah bayar)'], datasets: [{ data: [stats.total_enrolled, stats.total_paid - stats.total_enrolled], backgroundColor: ['#FFCE56', '#9966FF'] }] } });
