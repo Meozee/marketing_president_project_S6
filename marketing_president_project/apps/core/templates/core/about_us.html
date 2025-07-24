@@ -475,9 +475,7 @@
         <div class="team-intro">
             <h2>Meet Our Squad of Code Warriors! ⚔️</h2>
             <p>
-                Kami adalah sekelompok programmer yang berhasil survive dari Stack Overflow University dan lulusan Google Academy! 
-                Dengan skill debugging level ninja dan kemampuan memahami error message yang cryptic, 
-                kami menciptakan AI yang bisa prediksi calon mahasiswa. Fun fact: 90% solusi kami datang saat mandi! 🛁✨
+                Kami adalah sekelompok programmer yang berhasil melewati tantangan membangun dashboard marketing dan memahami data pendaftaran mahasiswa yang kompleks! Dengan skill debugging level ninja dan kemampuan mengatasi error database yang cryptic, kami menciptakan sistem untuk memprediksi tren pendaftaran mahasiswa. Fun fact: 90% solusi kami datang saat ngopi sambil brainstorming! ☕✨"
             </p>
         </div>
 
@@ -491,7 +489,11 @@
         </div>
         <div class="flip-card-back">
             <div class="fact-title">FUN FACT</div>
-            <p class="fact-text">#########################################</p>
+            <p class="fact-text">nama : kartika
+alamat : bumi
+agama : sesuai kepercayaan masing masing
+tinggi : 178km
+status : single</p>
         </div>
     </div>
 </div>
@@ -536,7 +538,8 @@
         </div>
         <div class="flip-card-back">
             <div class="fact-title">FUN FACT</div>
-            <p class="fact-text">###################</p>
+            <p class="fact-text">untuk project ini gua udah penuhin stamp di kovana 2 kali, dan minum sekitar 50an cup/botol/etc kopi
+</p>
         </div>
     </div>
 </div>
@@ -577,11 +580,11 @@
         <div class="fun-section">
             <h2>Our Epic Journey Stats! 📊</h2>
             <div class="stats-grid">
-                <div class="stat-item"><div class="stat-emoji">☕</div><div class="stat-text">247 cangkir kopi dikonsumsi<br><small>(dan 3 mesin kopi rusak)</small></div></div>
-                <div class="stat-item"><div class="stat-emoji">🌙</div><div class="stat-text">42 malam begadang<br><small>(record: 72 jam tanpa tidur)</small></div></div>
-                <div class="stat-item"><div class="stat-emoji">🐛</div><div class="stat-text">1,337 bugs dibasmi<br><small>(yes, itu bukan typo!)</small></div></div>
-                <div class="stat-item"><div class="stat-emoji">🍕</div><div class="stat-text">28 pizza sebagai fuel<br><small>(mostly pepperoni & margherita)</small></div></div>
-                <div class="stat-item"><div class="stat-emoji">💡</div><div class="stat-text">15 "Eureka!" moments<br><small>(11 terjadi di kamar mandi)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">☕</div><div class="stat-text">42 cangkir kopi dikonsumsi<br><small>(we love kovana)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">🌙</div><div class="stat-text">16 malam begadang<br><small>(record: 48 jam tanpa tidur)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">🐛</div><div class="stat-text">250+- bugs dibasmi<br><small>(yes, itu bukan typo!)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">🍛</div><div class="stat-text">14 nasi goreng sebagai fuel<br><small>(mostly  ruen & farhan)</small></div></div>
+                <div class="stat-item"><div class="stat-emoji">💡</div><div class="stat-text">7 "Eureka!" moments<br><small>(terjadi di kamar mandi)</small></div></div>
                 <div class="stat-item"><div class="stat-emoji">🎯</div><div class="stat-text">97.3% accuracy achieved<br><small>(better than our GPA lol)</small></div></div>
                 <div class="stat-item"><div class="stat-emoji">📚</div><div class="stat-text">5,821 tab Stack Overflow<br><small>(dan masih buka)</small></div></div>
                 <div class="stat-item"><div class="stat-emoji">📧</div><div class="stat-text">64 rapat jadi email<br><small>(efisiensi level dewa)</small></div></div>
@@ -648,14 +651,16 @@
     // --- ROTATING JOKE IN QUOTE SECTION ---
     let rotatingJokeIndex = 0;
     setInterval(() => {
-        const jokeElement = document.getElementById('rotating-joke');
-        jokeElement.style.opacity = '0';
-        setTimeout(() => {
-            jokeElement.textContent = rotatingJokes[rotatingJokeIndex];
-            jokeElement.style.opacity = '1';
-            rotatingJokeIndex = (rotatingJokeIndex + 1) % rotatingJokes.length;
-        }, 500);
-    }, 5000);
+    const jokeElement = document.getElementById('rotating-joke');
+    jokeElement.style.opacity = '0';
+    setTimeout(() => {
+        jokeElement.textContent = rotatingJokes[rotatingJokeIndex];
+        jokeElement.style.opacity = '1';
+        rotatingJokeIndex = (rotatingJokeIndex + 1) % rotatingJokes.length;
+    }, 500);
+}, 10000); // <-- Ganti 5000 menjadi 10000 untuk interval 10 detik
+
+
 
     // --- FLYING BUGS ---
     const bugTypes = ['🐛', '🪲'];
