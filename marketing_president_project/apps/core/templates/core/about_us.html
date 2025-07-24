@@ -51,12 +51,12 @@
         }
 
         .plane-image {
-            width: 80px;
-            height: 60px;
-            object-fit: contain;
-            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
-            transform: scaleX(-1); /* Flip image to face left */
-        }
+    width: 150px; /* increase width */
+    height: 120px; /* increase height */
+    object-fit: contain;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+}
+
 
         .plane-banner {
             display: inline-block;
@@ -231,7 +231,7 @@
             position: relative;
             width: 100%;
             height: 100%;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
         }
 
@@ -448,7 +448,8 @@
 <body>
     <div class="flying-plane" id="flyingPlane">
         <span class="plane-banner" id="plane-banner">99 bugs in the code, 99 bugs!</span>
-        <img src="https://via.placeholder.com/80x60/48bfe3/ffffff?text=✈️" alt="Flying Plane" class="plane-image" id="planeImage">
+        <img src="{% static 'images/plane.png' %}" alt="Flying Plane" class="plane-image" id="planeImage">
+
     </div>
 
     <div class="floating-element" style="top: 20%; left: 5%;">console.log("Hello World!");</div>
@@ -482,83 +483,95 @@
 
         <div class="team-grid">
             <div class="flip-card" data-order="1">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <img src="https://via.placeholder.com/150/ff79c6/0a192f?text=Alex" alt="Foto Alex" class="member-photo">
-                        <div class="member-name">Alex "The Binary Wizard"</div>
-                        <div class="member-role">Chief Algorithm Alchemist</div>
-                    </div>
-                    <div class="flip-card-back">
-                        <div class="fact-title">FUN FACT</div>
-                        <p class="fact-text">Alex bisa menulis kode sambil tidur, tapi hasilnya selalu dalam bahasa Assembly.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="flip-card" data-order="2">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <img src="https://via.placeholder.com/150/64ffda/0a192f?text=Sarah" alt="Foto Sarah" class="member-photo">
-                        <div class="member-name">Sarah "SQL Princess"</div>
-                        <div class="member-role">Database Empress</div>
-                    </div>
-                    <div class="flip-card-back">
-                        <div class="fact-title">FUN FACT</div>
-                        <p class="fact-text">Pernah secara tidak sengaja menghapus database produksi, tapi berhasil mengembalikannya sebelum ada yang sadar.</p>
-                    </div>
-                </div>
-            </div>
+    <div class="flip-card-inner">
+        <div class="flip-card-front">
+            <img src="{% static 'images/foto_kartika.jpg' %}" alt="Foto Kartika" class="member-photo">
+            <div class="member-name">Kartika "UI Architect"</div>
+            <div class="member-role">Frontend Developer</div>
+        </div>
+        <div class="flip-card-back">
+            <div class="fact-title">FUN FACT</div>
+            <p class="fact-text">#########################################</p>
+        </div>
+    </div>
+</div>
+
+
+           <div class="flip-card" data-order="2">
+    <div class="flip-card-inner">
+        <div class="flip-card-front">
+            <img src="{% static 'images/foto_miko.jpeg' %}" alt="Foto Miko" class="member-photo">
+            <div class="member-name">Miko "Tech Visionary"</div>
+            <div class="member-role">Leader</div>
+        </div>
+        <div class="flip-card-back">
+            <div class="fact-title">FUN FACT</div>
+            <p class="fact-text">well well well. panggil beliau king, because beliau pernah ngalahin Madara pake jari kelingking, sambil ULTI Flicker.</p>
+        </div>
+    </div>
+</div>
+
+
             <div class="flip-card" data-order="3">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <img src="https://via.placeholder.com/150/ff79c6/0a192f?text=Mike" alt="Foto Mike" class="member-photo">
-                        <div class="member-name">Mike "CSS Picasso"</div>
-                        <div class="member-role">Frontend Artisan</div>
-                    </div>
-                    <div class="flip-card-back">
-                        <div class="fact-title">FUN FACT</div>
-                        <p class="fact-text">Menghabiskan 8 jam untuk membuat sebuah tombol terlihat sempurna, lalu mengubah desainnya lagi esok hari.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="flip-card" data-order="4">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <img src="https://via.placeholder.com/150/64ffda/0a192f?text=Lisa" alt="Foto Lisa" class="member-photo">
-                        <div class="member-name">Lisa "Data Sherlock"</div>
-                        <div class="member-role">Analytics Detective</div>
-                    </div>
-                    <div class="flip-card-back">
-                        <div class="fact-title">FUN FACT</div>
-                        <p class="fact-text">Bisa menemukan korelasi antara cuaca dan jumlah bug. Spoiler: Hujan = lebih banyak bug.</p>
-                    </div>
-                </div>
-            </div>
+    <div class="flip-card-inner">
+        <div class="flip-card-front">
+            <img src="{% static 'images/foto_gilang.jpg' %}" alt="Foto Gilang" class="member-photo">
+            <div class="member-name">Gilang "UI/UX Maestro"</div>
+            <div class="member-role">Frontend Developer</div>
+        </div>
+        <div class="flip-card-back">
+            <div class="fact-title">FUN FACT</div>
+            <p class="fact-text">Punya 12 digit di roblox.</p>
+        </div>
+    </div>
+</div>
+
+
+           <div class="flip-card" data-order="4">
+    <div class="flip-card-inner">
+        <div class="flip-card-front">
+            <img src="{% static 'images/foto_khanifan.jpg' %}" alt="Foto Khanifan" class="member-photo">
+            <div class="member-name">Khanifan "Data Scientist"</div>
+            <div class="member-role">Backend Developer</div>
+        </div>
+        <div class="flip-card-back">
+            <div class="fact-title">FUN FACT</div>
+            <p class="fact-text">###################</p>
+        </div>
+    </div>
+</div>
+
+
             <div class="flip-card" data-order="5">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <img src="https://via.placeholder.com/150/ff79c6/0a192f?text=Ryan" alt="Foto Ryan" class="member-photo">
-                        <div class="member-name">Ryan "AI Whisperer"</div>
-                        <div class="member-role">Machine Learning Guru</div>
-                    </div>
-                    <div class="flip-card-back">
-                        <div class="fact-title">FUN FACT</div>
-                        <p class="fact-text">Model AI-nya pernah memprediksi bahwa kucing akan menguasai dunia. Kami masih memantaunya.</p>
-                    </div>
-                </div>
-            </div>
+    <div class="flip-card-inner">
+        <div class="flip-card-front">
+            <img src="{% static 'images/foto_farhan.jpg' %}" alt="Foto Farhan" class="member-photo">
+            <div class="member-name">Farhan "Data Science Assistant"</div>
+            <div class="member-role">Backend Developer</div>
+        </div>
+        <div class="flip-card-back">
+            <div class="fact-title">FUN FACT</div>
+            <p class="fact-text">flank bisa, anchor bisa, wingback bisa, second striker bisa, midfield apalagi</p>
+        </div>
+    </div>
+</div>
+
+
             <div class="flip-card" data-order="6">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <img src="https://via.placeholder.com/150/64ffda/0a192f?text=Emma" alt="Foto Emma" class="member-photo">
-                        <div class="member-name">Emma "Bug Slayer"</div>
-                        <div class="member-role">Quality Assurance Ninja</div>
-                    </div>
-                    <div class="flip-card-back">
-                        <div class="fact-title">FUN FACT</div>
-                        <p class="fact-text">Punya indra keenam untuk menemukan bug. Cukup dengan melihat kode, dia bisa merasakan ada yang tidak beres.</p>
-                    </div>
-                </div>
-            </div>
+    <div class="flip-card-inner">
+        <div class="flip-card-front">
+            <img src="{% static 'images/foto_adam.jpg' %}" alt="Foto Adam" class="member-photo">
+            <div class="member-name">Adam "Database Specialist"</div>
+            <div class="member-role">Backend Developer</div>
+        </div>
+        <div class="flip-card-back">
+            <div class="fact-title">FUN FACT</div>
+            <p class="fact-text">Saya bisa serius banget pas kerja atau belajar, tapi tetap bisa nyelipin candaan random yang bikin orang nggak nyangka. 😎</p>
+        </div>
+    </div>
+</div>
+
+
         </div>
 
         <div class="fun-section">
@@ -586,129 +599,150 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- JOKES & SOUNDS COLLECTIONS ---
-            const planeJokes = [
-                "99 bugs in the code, 99 bugs!",
-                "Why do Java developers wear glasses? Because they can't C#!",
-                "A SQL query walks up to two tables and asks: 'Can I join you?'",
-                "There are only 10 types of people in the world...",
-                "Why did the programmer quit his job? He didn't get arrays!"
-            ];
+    let currentAudio = null;  // Variabel untuk menyimpan audio yang sedang diputar
 
-            const rotatingJokes = [
-                "Why do programmers prefer dark mode? Because light attracts bugs!",
-                "Debugging is like being the detective in a crime movie where you are also the murderer!",
-                "Code never lies, comments sometimes do!",
-                "Real programmers count from 0!",
-                "Algorithm: A word used by programmers when they don't want to explain what they did!"
-            ];
+    // --- JOKES & SOUNDS COLLECTIONS ---
+    const planeJokes = [
+        "99 bugs in the code, 99 bugs!",
+        "Why do Java developers wear glasses? Because they can't C#!",
+        "A SQL query walks up to two tables and asks: 'Can I join you?'",
+        "There are only 10 types of people in the world...",
+        "Why did the programmer quit his job? He didn't get arrays!"
+    ];
 
-            const flipSounds = [
-                'https://www.soundjay.com/switch/switch-1.mp3',
-                'https://www.soundjay.com/switch/switch-2.mp3',
-                'https://www.soundjay.com/switch/switch-3.mp3',
-                'https://www.soundjay.com/switch/switch-4.mp3',
-                'https://www.soundjay.com/button/button-1.mp3',
-                'https://www.soundjay.com/button/button-2.mp3'
-            ];
-            
-            // --- FLYING PLANE LOGIC ---
-            const plane = document.getElementById('flyingPlane');
-            const planeBanner = document.getElementById('plane-banner');
-            let planeJokeIndex = 0;
+    const rotatingJokes = [
+        "Why do programmers prefer dark mode? Because light attracts bugs!",
+        "Debugging is like being the detective in a crime movie where you are also the murderer!",
+        "Code never lies, comments sometimes do!",
+        "Real programmers count from 0!",
+        "Algorithm: A word used by programmers when they don't want to explain what they did!"
+    ];
 
-            plane.addEventListener('animationiteration', () => {
-                planeJokeIndex = (planeJokeIndex + 1) % planeJokes.length;
-                planeBanner.textContent = planeJokes[planeJokeIndex];
-            });
+    const flipSounds = [
+        '{% static "audio/Audio 1.mp3" %}',
+        '{% static "audio/Audio 2.mp3" %}',
+        '{% static "audio/Audio 3.mp3" %}',
+        '{% static "audio/Audio 4.mp3" %}',
+        '{% static "audio/Audio 5.mp3" %}',
+        '{% static "audio/Audio 6.mp3" %}',
+        '{% static "audio/Audio 7.mp3" %}',
+        '{% static "audio/Audio 8.mp3" %}',
+        '{% static "audio/Audio 9.mp3" %}',
+        '{% static "audio/Audio 10.mp3" %}',
+        '{% static "audio/Audio 11.mp3" %}',
+        '{% static "audio/Audio 12.mp3" %}',
+        '{% static "audio/Audio 13.mp3" %}',
+        '{% static "audio/Audio 14.mp3" %}'
+    ];
 
-            // --- ROTATING JOKE IN QUOTE SECTION ---
-            let rotatingJokeIndex = 0;
-            setInterval(() => {
-                const jokeElement = document.getElementById('rotating-joke');
-                jokeElement.style.opacity = '0';
-                setTimeout(() => {
-                    jokeElement.textContent = rotatingJokes[rotatingJokeIndex];
-                    jokeElement.style.opacity = '1';
-                    rotatingJokeIndex = (rotatingJokeIndex + 1) % rotatingJokes.length;
-                }, 500);
-            }, 5000);
+    // --- FLYING PLANE LOGIC ---
+    const plane = document.getElementById('flyingPlane');
+    const planeBanner = document.getElementById('plane-banner');
+    let planeJokeIndex = 0;
 
-            // --- FLYING BUGS ---
-            const bugTypes = ['🐛', '🪲'];
-            function createFlyingBug() {
-                const bug = document.createElement('div');
-                bug.className = 'flying-bug';
-                bug.textContent = bugTypes[Math.floor(Math.random() * bugTypes.length)];
-                document.body.appendChild(bug);
+    plane.addEventListener('animationiteration', () => {
+        planeJokeIndex = (planeJokeIndex + 1) % planeJokes.length;
+        planeBanner.textContent = planeJokes[planeJokeIndex];
+    });
 
-                const startX = Math.random() * window.innerWidth;
-                const startY = Math.random() * window.innerHeight;
-                const duration = Math.random() * 10 + 15;
-                const animationName = Math.random() > 0.5 ? 'flyBug1' : 'flyBug2';
+    // --- ROTATING JOKE IN QUOTE SECTION ---
+    let rotatingJokeIndex = 0;
+    setInterval(() => {
+        const jokeElement = document.getElementById('rotating-joke');
+        jokeElement.style.opacity = '0';
+        setTimeout(() => {
+            jokeElement.textContent = rotatingJokes[rotatingJokeIndex];
+            jokeElement.style.opacity = '1';
+            rotatingJokeIndex = (rotatingJokeIndex + 1) % rotatingJokes.length;
+        }, 500);
+    }, 5000);
 
-                bug.style.left = `${startX}px`;
-                bug.style.top = `${startY}px`;
-                bug.style.animation = `${animationName} ${duration}s linear infinite`;
-                bug.style.fontSize = `${Math.random() * 1 + 0.8}rem`;
-                bug.style.animationDelay = `${Math.random() * 5}s`;
-            }
+    // --- FLYING BUGS ---
+    const bugTypes = ['🐛', '🪲'];
+    function createFlyingBug() {
+        const bug = document.createElement('div');
+        bug.className = 'flying-bug';
+        bug.textContent = bugTypes[Math.floor(Math.random() * bugTypes.length)];
+        document.body.appendChild(bug);
 
-            for (let i = 0; i < 8; i++) {
-                createFlyingBug();
-            }
+        const startX = Math.random() * window.innerWidth;
+        const startY = Math.random() * window.innerHeight;
+        const duration = Math.random() * 10 + 15;
+        const animationName = Math.random() > 0.5 ? 'flyBug1' : 'flyBug2';
 
-            // --- FLIP CARD INTERACTION ---
-            const flipCards = document.querySelectorAll('.flip-card');
-            flipCards.forEach(card => {
-                let hoverTimeout;
-                const cardInner = card.querySelector('.flip-card-inner');
+        bug.style.left = `${startX}px`;
+        bug.style.top = `${startY}px`;
+        bug.style.animation = `${animationName} ${duration}s linear infinite`;
+        bug.style.fontSize = `${Math.random() * 1 + 0.8}rem`;
+        bug.style.animationDelay = `${Math.random() * 5}s`;
+    }
 
-                card.addEventListener('mouseenter', () => {
-                    hoverTimeout = setTimeout(() => {
-                        // Play a random sound
-                        try {
-                            const randomSound = flipSounds[Math.floor(Math.random() * flipSounds.length)];
-                            new Audio(randomSound).play();
-                        } catch (e) {
-                            console.error("Audio playback failed. User interaction might be needed.", e);
-                        }
-                        
-                        // Flip the card
-                        cardInner.classList.add('is-flipped');
-                    }, 1000); // Waktu tunda diubah menjadi 1 detik (1000 ms)
-                });
+    for (let i = 0; i < 8; i++) {
+        createFlyingBug();
+    }
 
-                card.addEventListener('mouseleave', () => {
-                    clearTimeout(hoverTimeout);
-                    cardInner.classList.remove('is-flipped');
-                });
-            });
+    // --- FLIP CARD INTERACTION ---
+    const flipCards = document.querySelectorAll('.flip-card');
+    flipCards.forEach(card => {
+        let hoverTimeout;
+        const cardInner = card.querySelector('.flip-card-inner');
 
-            // --- KONAMI CODE ---
-            let konamiCode = [];
-            const konamiSequence = [
-                'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
-                'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
-                'KeyB', 'KeyA'
-            ];
-
-            document.addEventListener('keydown', function(e) {
-                konamiCode.push(e.code);
-                if (konamiCode.length > konamiSequence.length) konamiCode.shift();
-                
-                if (konamiCode.join(',') === konamiSequence.join(',')) {
-                    document.body.classList.add('konami-activated');
-                    alert('🎉 KONAMI CODE ACTIVATED! Party mode ON! 🎊');
-                    
-                    setTimeout(() => {
-                        document.body.classList.remove('konami-activated');
-                    }, 5000);
-                    
-                    konamiCode = [];
+        card.addEventListener('mouseenter', () => {
+            hoverTimeout = setTimeout(() => {
+                // Play a random sound
+                try {
+                    const randomSound = flipSounds[Math.floor(Math.random() * flipSounds.length)];
+                    if (currentAudio) {
+                        currentAudio.pause();  // Hentikan audio yang sedang diputar
+                    }
+                    currentAudio = new Audio(randomSound);
+                    currentAudio.play();
+                } catch (e) {
+                    console.error("Audio playback failed. User interaction might be needed.", e);
                 }
-            });
+                
+                // Flip the card
+                cardInner.classList.add('is-flipped');
+            }, 1000); // Waktu tunda diubah menjadi 1 detik (1000 ms)
         });
+
+        card.addEventListener('mouseleave', () => {
+            clearTimeout(hoverTimeout);
+            cardInner.classList.remove('is-flipped');
+            
+            // Hentikan audio ketika kartu kembali ke posisi normal
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;  // Reset audio ke awal
+            }
+        });
+    });
+
+    // --- KONAMI CODE ---
+    let konamiCode = [];
+    const konamiSequence = [
+        'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+        'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+        'KeyB', 'KeyA'
+    ];
+
+    document.addEventListener('keydown', function(e) {
+        konamiCode.push(e.code);
+        if (konamiCode.length > konamiSequence.length) konamiCode.shift();
+        
+        if (konamiCode.join(',') === konamiSequence.join(',')) {
+            document.body.classList.add('konami-activated');
+            alert('🎉 KONAMI CODE ACTIVATED! Party mode ON! 🎊');
+            
+            setTimeout(() => {
+                document.body.classList.remove('konami-activated');
+            }, 5000);
+            
+            konamiCode = [];
+        }
+    });
+});
+
     </script>
 </body>
 </html>

@@ -56,6 +56,12 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'marketing_president_project.urls'
 
 import os
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATES = [
@@ -87,7 +93,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'marketing_student_semester_6',
         'USER': 'postgres',
-        'PASSWORD': 'Meoze404',
+        'PASSWORD': 'masteruen1',
         'HOST': 'localhost',
         'PORT': '5432',
     }
