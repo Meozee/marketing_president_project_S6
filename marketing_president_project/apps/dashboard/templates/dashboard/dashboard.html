@@ -16,40 +16,152 @@
     select:disabled { background-color: #e9ecef; opacity: 0.6; cursor: not-allowed; }
     .stat-number { font-size: 2rem; font-weight: bold; color: #1e3a8a; }
     .stat-label { font-size: 0.9rem; color: #6b7280; }
+    .loading-spinner { display: none; width: 2rem; height: 2rem; border: 0.25em solid currentColor; border-right-color: transparent; }
 </style>
 
 <div class="container-fluid py-4">
     <h1 class="mb-4 text-3xl font-bold text-gray-800">Dashboard Pendaftaran</h1>
     
     <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
-        <li class="nav-item" role="presentation"><button class="nav-link active" id="national-tab" data-bs-toggle="tab" data-bs-target="#national" type="button" role="tab">Nasional</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="international-tab" data-bs-toggle="tab" data-bs-target="#international" type="button" role="tab">Internasional</button></li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="national-tab" data-bs-toggle="tab" data-bs-target="#national" type="button" role="tab">Nasional</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="international-tab" data-bs-toggle="tab" data-bs-target="#international" type="button" role="tab">Internasional</button>
+        </li>
     </ul>
 
     <div class="tab-content" id="dashboardTabContent">
+        <!-- Tab Nasional -->
         <div class="tab-pane fade show active" id="national" role="tabpanel">
             <div class="filter-section">
                 <div class="row align-items-end">
-                    <div class="col-md-3"><label for="yearSelect" class="form-label">Tahun Data</label><select class="form-select" id="yearSelect"><option value="">Pilih Tahun</option></select></div>
-                    <div class="col-md-3"><label for="provinceSelect" class="form-label">Provinsi</label><select class="form-select" id="provinceSelect" disabled><option value="">Pilih Provinsi</option></select></div>
-                    <div class="col-md-3"><label for="regencySelect" class="form-label">Kota/Kabupaten</label><select class="form-select" id="regencySelect" disabled><option value="">Pilih Kota</option></select></div>
+                    <div class="col-md-3">
+                        <label for="yearSelect" class="form-label">Tahun Data</label>
+                        <select class="form-select" id="yearSelect">
+                            <option value="">Pilih Tahun</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="provinceSelect" class="form-label">Provinsi</label>
+                        <select class="form-select" id="provinceSelect" disabled>
+                            <option value="">Pilih Provinsi</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="regencySelect" class="form-label">Kota/Kabupaten</label>
+                        <select class="form-select" id="regencySelect" disabled>
+                            <option value="">Pilih Kota</option>
+                        </select>
+                    </div>
                     <div class="col-md-3 d-grid gap-2">
-                        <button class="btn btn-primary" id="applyFilterBtn">Terapkan Filter</button>
+                        <button class="btn btn-primary" id="applyFilterBtn">
+                            <span id="applyFilterText">Terapkan Filter</span>
+                            <span class="spinner-border spinner-border-sm loading-spinner" id="applyFilterSpinner"></span>
+                        </button>
                         <button class="btn btn-secondary" id="resetFilters">Reset Filter</button>
                     </div>
                 </div>
             </div>
+            
             <div id="national-content" class="d-none">
-                <div class="row"><div class="col-md-3"><div class="stats-card text-center"><div class="stat-number" id="totalRegistrants">0</div><div class="stat-label">Total Pendaftar</div></div></div><div class="col-md-3"><div class="stats-card text-center"><div class="stat-number" id="totalPaid">0</div><div class="stat-label">Total Bayar</div></div></div><div class="col-md-3"><div class="stats-card text-center"><div class="stat-number" id="totalEnrolled">0</div><div class="stat-label">Total Enroll</div></div></div><div class="col-md-3"><div class="stats-card text-center"><div class="stat-number" id="enrollmentRate">0%</div><div class="stat-label">Tingkat Enroll</div></div></div></div>
-                <div class="chart-container d-none" id="nationalChartContainer"><canvas id="nationalChartCanvas"></canvas></div>
-                <div class="table-container"><h5 id="tableTitle" class="mb-3">Data Rinci</h5><div class="table-responsive"><table class="table table-striped"><thead><tr id="tableHead"></tr></thead><tbody id="tableBody"></tbody></table></div></div>
-                <div class="row mt-4 d-none" id="bottomStatsContainer"><div class="col-md-6"><div class="chart-container"><h5>Distribusi Bayar</h5><canvas id="paymentChart"></canvas></div></div><div class="col-md-6"><div class="chart-container"><h5>Distribusi Enroll</h5><canvas id="enrollmentChart"></canvas></div></div></div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stats-card text-center">
+                            <div class="stat-number" id="totalRegistrants">0</div>
+                            <div class="stat-label">Total Pendaftar</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card text-center">
+                            <div class="stat-number" id="totalPaid">0</div>
+                            <div class="stat-label">Total Bayar</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card text-center">
+                            <div class="stat-number" id="totalEnrolled">0</div>
+                            <div class="stat-label">Total Enroll</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card text-center">
+                            <div class="stat-number" id="enrollmentRate">0%</div>
+                            <div class="stat-label">Tingkat Enroll</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container d-none" id="nationalChartContainer">
+                    <canvas id="nationalChartCanvas"></canvas>
+                </div>
+                
+                <div class="table-container">
+                    <h5 id="tableTitle" class="mb-3">Data Rinci</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr id="tableHead"></tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="row mt-4 d-none" id="bottomStatsContainer">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5>Distribusi Bayar</h5>
+                            <canvas id="paymentChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5>Distribusi Enroll</h5>
+                            <canvas id="enrollmentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        
+        <!-- Tab Internasional -->
         <div class="tab-pane fade" id="international" role="tabpanel">
-            <div class="filter-section"><div class="row align-items-end"><div class="col-md-4"><label for="intlYearSelect" class="form-label">Tahun Data</label><select class="form-select" id="intlYearSelect"><option value="">Pilih Tahun</option></select></div></div></div>
-            <div id="international-content" class="d-none"><div class="chart-container"><h5 class="mb-3">Top 15 Negara Pendaftar</h5><div id="intlMapContainer" style="height: 500px; width: 100%;"></div>
-</div><div class="table-container"><h5 class="mb-3">Data per Negara</h5><div class="table-responsive"><table class="table table-striped"><thead><tr id="intlTableHead"></tr></thead><tbody id="intlTableBody"></tbody></table></div></div></div>
+            <div class="filter-section">
+                <div class="row align-items-end">
+                    <div class="col-md-4">
+                        <label for="intlYearSelect" class="form-label">Tahun Data</label>
+                        <select class="form-select" id="intlYearSelect">
+                            <option value="">Pilih Tahun</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-grid gap-2">
+                        <button class="btn btn-primary" id="applyIntlFilterBtn">
+                            <span id="applyIntlFilterText">Terapkan Filter</span>
+                            <span class="spinner-border spinner-border-sm loading-spinner" id="applyIntlFilterSpinner"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="international-content" class="d-none">
+                <div class="chart-container">
+                    <h5 class="mb-3">Top 15 Negara Pendaftar</h5>
+                    <div id="intlMapContainer" style="height: 500px; width: 100%;"></div>
+                </div>
+                
+                <div class="table-container">
+                    <h5 class="mb-3">Data per Negara</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr id="intlTableHead"></tr>
+                            </thead>
+                            <tbody id="intlTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -61,113 +173,336 @@
 
 <script>
     let nationalChart, intlChart, paymentChart, enrollmentChart;
+    
     document.addEventListener('DOMContentLoaded', function() {
-        const yearSelect = document.getElementById('yearSelect'), provinceSelect = document.getElementById('provinceSelect'), regencySelect = document.getElementById('regencySelect'), intlYearSelect = document.getElementById('intlYearSelect'), applyBtn = document.getElementById('applyFilterBtn'), resetBtn = document.getElementById('resetFilters');
-        fetch("{% url 'dashboard:api_years' %}").then(res => res.json()).then(data => {
-            data.years.forEach(year => { yearSelect.add(new Option(year.label, year.value)); intlYearSelect.add(new Option(year.label, year.value)); });
+        // Elemen DOM
+        const yearSelect = document.getElementById('yearSelect');
+        const provinceSelect = document.getElementById('provinceSelect');
+        const regencySelect = document.getElementById('regencySelect');
+        const intlYearSelect = document.getElementById('intlYearSelect');
+        const applyBtn = document.getElementById('applyFilterBtn');
+        const applyIntlBtn = document.getElementById('applyIntlFilterBtn');
+        const resetBtn = document.getElementById('resetFilters');
+        
+        // Load tahun data
+        fetch("{% url 'dashboard:api_years' %}")
+            .then(res => res.json())
+            .then(data => {
+                data.years.forEach(year => {
+                    yearSelect.add(new Option(year.label, year.value));
+                    intlYearSelect.add(new Option(year.label, year.value));
+                });
+            });
+        
+        // Event listeners
+        yearSelect.addEventListener('change', () => {
+            provinceSelect.value = '';
+            regencySelect.innerHTML = '<option value="">Pilih Kota</option>';
+            regencySelect.disabled = true;
+            updateProvinceDropdown();
         });
-        yearSelect.addEventListener('change', () => { provinceSelect.value = ''; regencySelect.innerHTML = '<option value="">Pilih Kota</option>'; regencySelect.disabled = true; updateProvinceDropdown(); });
-        provinceSelect.addEventListener('change', () => { regencySelect.value = ''; updateRegencyDropdown(); });
-        intlYearSelect.addEventListener('change', loadInternationalData);
-        applyBtn.addEventListener('click', loadNationalData);
-        resetBtn.addEventListener('click', () => { yearSelect.value = ''; provinceSelect.innerHTML = '<option value="">Pilih Provinsi</option>'; regencySelect.innerHTML = '<option value="">Pilih Kota</option>'; provinceSelect.disabled = true; regencySelect.disabled = true; document.getElementById('national-content').classList.add('d-none'); });
+        
+        provinceSelect.addEventListener('change', () => {
+            regencySelect.value = '';
+            updateRegencyDropdown();
+        });
+        
+        intlYearSelect.addEventListener('change', () => {
+            document.getElementById('international-content').classList.add('d-none');
+        });
+        
+        applyBtn.addEventListener('click', () => {
+            const spinner = document.getElementById('applyFilterSpinner');
+            const text = document.getElementById('applyFilterText');
+            
+            spinner.style.display = 'inline-block';
+            text.style.display = 'none';
+            
+            loadNationalData().finally(() => {
+                spinner.style.display = 'none';
+                text.style.display = 'inline';
+            });
+        });
+        
+        applyIntlBtn.addEventListener('click', () => {
+            const spinner = document.getElementById('applyIntlFilterSpinner');
+            const text = document.getElementById('applyIntlFilterText');
+            
+            spinner.style.display = 'inline-block';
+            text.style.display = 'none';
+            
+            loadInternationalData().finally(() => {
+                spinner.style.display = 'none';
+                text.style.display = 'inline';
+            });
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            yearSelect.value = '';
+            provinceSelect.innerHTML = '<option value="">Pilih Provinsi</option>';
+            regencySelect.innerHTML = '<option value="">Pilih Kota</option>';
+            provinceSelect.disabled = true;
+            regencySelect.disabled = true;
+            document.getElementById('national-content').classList.add('d-none');
+        });
     });
-    function buildQueryString(params) { return Object.entries(params).filter(([_, value]) => value).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&'); }
-    function loadNationalData() {
-        const params = { year: document.getElementById('yearSelect').value, province_id: document.getElementById('provinceSelect').value, regency_id: document.getElementById('regencySelect').value };
-        if (!params.year) { alert('Silakan pilih tahun data terlebih dahulu.'); return; }
-        fetch(`{% url 'dashboard:api_data_national' %}?${buildQueryString(params)}`).then(res => res.json()).then(data => {
+    
+    function buildQueryString(params) {
+        return Object.entries(params)
+            .filter(([_, value]) => value)
+            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+            .join('&');
+    }
+    
+    async function loadNationalData() {
+        const params = {
+            year: document.getElementById('yearSelect').value,
+            province_id: document.getElementById('provinceSelect').value,
+            regency_id: document.getElementById('regencySelect').value
+        };
+        
+        if (!params.year) {
+            alert('Silakan pilih tahun data terlebih dahulu.');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`{% url 'dashboard:api_data_national' %}?${buildQueryString(params)}`);
+            const data = await response.json();
+            
             document.getElementById('national-content').classList.remove('d-none');
-            updateNationalStats(data.statistics); updateNationalTable(data.table_data); updateNationalVisualization(data.visualization);
-            if(params.regency_id) { document.getElementById('bottomStatsContainer').classList.remove('d-none'); updateBottomCharts(data.statistics); } 
-            else { document.getElementById('bottomStatsContainer').classList.add('d-none'); }
-        });
+            
+            // Update statistik
+            updateNationalStats(data.statistics);
+            
+            // Update tabel
+            updateNationalTable(data.table_data);
+            
+            // Update visualisasi
+            updateNationalVisualization(data.visualization);
+            
+            // Tampilkan chart tambahan jika level kota/kabupaten
+            if(params.regency_id) {
+                document.getElementById('bottomStatsContainer').classList.remove('d-none');
+                updateBottomCharts(data.statistics);
+            } else {
+                document.getElementById('bottomStatsContainer').classList.add('d-none');
+            }
+            
+        } catch (error) {
+            console.error('Error loading national data:', error);
+            alert('Terjadi kesalahan saat memuat data. Silakan coba lagi.');
+        }
     }
-    function loadInternationalData() {
-        const params = { year: document.getElementById('intlYearSelect').value };
-        if (!params.year) return;
-        fetch(`{% url 'dashboard:api_data_international' %}?${buildQueryString(params)}`).then(res => res.json()).then(data => {
+    
+    async function loadInternationalData() {
+        const params = {
+            year: document.getElementById('intlYearSelect').value
+        };
+        
+        if (!params.year) {
+            alert('Silakan pilih tahun data terlebih dahulu.');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`{% url 'dashboard:api_data_international' %}?${buildQueryString(params)}`);
+            const data = await response.json();
+            
             document.getElementById('international-content').classList.remove('d-none');
-            updateInternationalTable(data.table_data); updateInternationalVisualization(data.visualization);
-        });
+            updateInternationalTable(data.table_data);
+            updateInternationalVisualization(data.visualization);
+            
+        } catch (error) {
+            console.error('Error loading international data:', error);
+            alert('Terjadi kesalahan saat memuat data internasional. Silakan coba lagi.');
+        }
     }
+    
     function updateProvinceDropdown() {
         const provinceSelect = document.getElementById('provinceSelect');
-        fetch(`{% url 'dashboard:api_provinces' %}`).then(res => res.json()).then(data => {
-            provinceSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
-            data.provinces.forEach(p => provinceSelect.add(new Option(p.name, p.id)));
-            provinceSelect.disabled = false;
-        });
+        
+        fetch(`{% url 'dashboard:api_provinces' %}`)
+            .then(res => res.json())
+            .then(data => {
+                provinceSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
+                data.provinces.forEach(p => provinceSelect.add(new Option(p.name, p.id)));
+                provinceSelect.disabled = false;
+            });
     }
+    
     function updateRegencyDropdown() {
-        const regencySelect = document.getElementById('regencySelect'), provinceId = document.getElementById('provinceSelect').value;
-        if (!provinceId) { regencySelect.disabled = true; return; }
-        fetch(`{% url 'dashboard:api_regencies' %}?province_id=${provinceId}`).then(res => res.json()).then(data => {
-            regencySelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
-            data.regencies.forEach(r => regencySelect.add(new Option(r.name, r.id)));
-            regencySelect.disabled = false;
-        });
+        const regencySelect = document.getElementById('regencySelect');
+        const provinceId = document.getElementById('provinceSelect').value;
+        
+        if (!provinceId) {
+            regencySelect.disabled = true;
+            return;
+        }
+        
+        fetch(`{% url 'dashboard:api_regencies' %}?province_id=${provinceId}`)
+            .then(res => res.json())
+            .then(data => {
+                regencySelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
+                data.regencies.forEach(r => regencySelect.add(new Option(r.name, r.id)));
+                regencySelect.disabled = false;
+            });
     }
-    function updateNationalStats(stats) { document.getElementById('totalRegistrants').textContent = stats.total_registrants; document.getElementById('totalPaid').textContent = stats.total_paid; document.getElementById('totalEnrolled').textContent = stats.total_enrolled; document.getElementById('enrollmentRate').textContent = stats.enrollment_rate + '%'; }
+    
+    function updateNationalStats(stats) {
+        document.getElementById('totalRegistrants').textContent = stats.total_registrants.toLocaleString();
+        document.getElementById('totalPaid').textContent = stats.total_paid.toLocaleString();
+        document.getElementById('totalEnrolled').textContent = stats.total_enrolled.toLocaleString();
+        document.getElementById('enrollmentRate').textContent = stats.enrollment_rate + '%';
+    }
+    
     function updateNationalTable(tableData) {
-        const tHead = document.getElementById('tableHead'), tBody = document.getElementById('tableBody');
+        const tHead = document.getElementById('tableHead');
+        const tBody = document.getElementById('tableBody');
+        
         tHead.innerHTML = `<tr>${tableData.headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
-        tBody.innerHTML = tableData.rows.map(row => `<tr>${row.map(cell => `<td>${cell || '-'}</td>`).join('')}</tr>`).join('');
+        tBody.innerHTML = tableData.rows.map(row => 
+            `<tr>${row.map(cell => `<td>${cell || '-'}</td>`).join('')}</tr>`
+        ).join('');
     }
+    
     function updateInternationalTable(tableData) {
-        const tHead = document.getElementById('intlTableHead'), tBody = document.getElementById('intlTableBody');
+        const tHead = document.getElementById('intlTableHead');
+        const tBody = document.getElementById('intlTableBody');
+        
         tHead.innerHTML = `<tr>${tableData.headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
-        tBody.innerHTML = tableData.rows.map(row => `<tr>${row.map(cell => `<td>${cell || '-'}</td>`).join('')}</tr>`).join('');
+        tBody.innerHTML = tableData.rows.map(row => 
+            `<tr>${row.map(cell => `<td>${cell || '-'}</td>`).join('')}</tr>`
+        ).join('');
     }
-    function renderChart(chartInstance, canvasId, config) { if(chartInstance) chartInstance.destroy(); return new Chart(document.getElementById(canvasId).getContext('2d'), config); }
+    
+    function renderChart(chartInstance, canvasId, config) {
+        if(chartInstance) chartInstance.destroy();
+        return new Chart(document.getElementById(canvasId).getContext('2d'), config);
+    }
+    
     function updateNationalVisualization(viz) {
         const container = document.getElementById('nationalChartContainer');
-        if(viz.type === 'none') { container.classList.add('d-none'); return; }
+        
+        if(viz.type === 'none') {
+            container.classList.add('d-none');
+            return;
+        }
+        
         container.classList.remove('d-none');
+        
         nationalChart = renderChart(nationalChart, 'nationalChartCanvas', {
             type: viz.type,
-            data: { labels: viz.data.map(d => d.name), datasets: [{ data: viz.data.map(d => d.value), backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'] }] },
-            options: { responsive: true, maintainAspectRatio: false, indexAxis: viz.type === 'bar' ? 'y' : 'x' }
+            data: {
+                labels: viz.data.map(d => d.name),
+                datasets: [{
+                    data: viz.data.map(d => d.value),
+                    backgroundColor: [
+                        '#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', 
+                        '#9966FF', '#FF9F40', '#8AC24A', '#607D8B',
+                        '#9C27B0', '#E91E63'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: viz.type === 'bar' ? 'y' : 'x',
+                plugins: {
+                    legend: {
+                        position: viz.type === 'bar' ? 'right' : 'bottom'
+                    }
+                }
+            }
         });
     }
+    
     function updateInternationalVisualization(viz) {
-    Highcharts.mapChart('intlMapContainer', {
-        chart: {
-            map: 'custom/world'
-        },
-        title: {
-            text: 'Distribusi Pendaftar Internasional'
-        },
-        subtitle: {
-            text: 'Berdasarkan negara asal'
-        },
-        colorAxis: {
-            min: 0,
-            stops: [
-                [0, '#EFEFFF'],
-                [0.5, '#447BB2'],
-                [1, '#000022']
-            ]
-        },
-        series: [{
-            data: viz.data, // format: [{ code: 'ID', value: 50 }, { code: 'VN', value: 12 }, ... ]
-            name: 'Jumlah Pendaftar',
-            joinBy: ['iso-a2', 'code'],  // penting!
-            states: {
-                hover: {
-                    color: '#BADA55'
+        Highcharts.mapChart('intlMapContainer', {
+            chart: {
+                map: 'custom/world',
+                height: '500px'
+            },
+            title: {
+                text: 'Distribusi Pendaftar Internasional'
+            },
+            subtitle: {
+                text: 'Berdasarkan negara asal'
+            },
+            mapNavigation: {
+                enabled: true,
+                buttonOptions: {
+                    verticalAlign: 'bottom'
                 }
             },
+            colorAxis: {
+                min: 0,
+                stops: [
+                    [0, '#EFEFFF'],
+                    [0.5, '#447BB2'],
+                    [1, '#000022']
+                ]
+            },
             tooltip: {
-                pointFormat: '{point.name}: <b>{point.value} pendaftar</b>'
-            }
-        }]
-    });
-}
-
+                headerFormat: '<span style="font-size:10px">{point.key}</span><br/>',
+                pointFormat: '<b>{point.value}</b> pendaftar'
+            },
+            series: [{
+                data: viz.data,
+                name: 'Jumlah Pendaftar',
+                joinBy: ['iso-a2', 'code'],
+                states: {
+                    hover: {
+                        color: '#BADA55'
+                    }
+                }
+            }]
+        });
+    }
+    
     function updateBottomCharts(stats) {
-        paymentChart = renderChart(paymentChart, 'paymentChart', { type: 'doughnut', data: { labels: ['Sudah Bayar', 'Belum Bayar'], datasets: [{ data: [stats.total_paid, stats.total_registrants - stats.total_paid], backgroundColor: ['#4BC0C0', '#FF6384'] }] } });
-        enrollmentChart = renderChart(enrollmentChart, 'enrollmentChart', { type: 'doughnut', data: { labels: ['Sudah Enroll', 'Belum Enroll (dari yg sudah bayar)'], datasets: [{ data: [stats.total_enrolled, stats.total_paid - stats.total_enrolled], backgroundColor: ['#FFCE56', '#9966FF'] }] } });
+        // Chart pembayaran
+        paymentChart = renderChart(paymentChart, 'paymentChart', {
+            type: 'doughnut',
+            data: {
+                labels: ['Sudah Bayar', 'Belum Bayar'],
+                datasets: [{
+                    data: [stats.total_paid, stats.total_registrants - stats.total_paid],
+                    backgroundColor: ['#4BC0C0', '#FF6384'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+        // Chart enrollment
+        enrollmentChart = renderChart(enrollmentChart, 'enrollmentChart', {
+            type: 'doughnut',
+            data: {
+                labels: ['Sudah Enroll', 'Belum Enroll (dari yg sudah bayar)'],
+                datasets: [{
+                    data: [stats.total_enrolled, stats.total_paid - stats.total_enrolled],
+                    backgroundColor: ['#FFCE56', '#9966FF'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
     }
 </script>
 {% endblock %}

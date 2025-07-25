@@ -2,7 +2,6 @@
 
 from django.db import models
 
-# Definisikan model referensi terlebih dahulu
 class Provinsi(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -30,8 +29,9 @@ class Regency(models.Model):
 
 class Countries(models.Model):
     idcountrydata = models.IntegerField(primary_key=True)
-    countrycode = models.CharField(max_length=2, blank=True, null=True)  # Tambahkan ini!
+    countrycode = models.CharField(max_length=2, blank=True, null=True)
     countryname = models.CharField(max_length=255, blank=True, null=True)
+    fullname = models.CharField(max_length=255, blank=True, null=True)  # Ditambahkan sesuai skema
 
     class Meta:
         managed = False
@@ -39,10 +39,8 @@ class Countries(models.Model):
         verbose_name_plural = 'Countries'
 
     def __str__(self):
-        return self.countryname
+        return self.countryname or ''
 
-
-# Model utama dengan tipe field yang sudah disesuaikan (IntegerField untuk ispaid/isenrolled)
 class Eda20232024(models.Model):
     idregistrantdata = models.IntegerField(primary_key=True)
     groupreg = models.CharField(max_length=255, blank=True, null=True)
@@ -50,10 +48,11 @@ class Eda20232024(models.Model):
     graduationyear = models.IntegerField(blank=True, null=True)
     iddataprovinces = models.ForeignKey(Provinsi, models.DO_NOTHING, db_column='iddataprovinces', blank=True, null=True)
     iddataregencies = models.ForeignKey(Regency, models.DO_NOTHING, db_column='iddataregencies', blank=True, null=True)
-    nationality = models.CharField(max_length=255, blank=True, null=True)
+    nationality = models.IntegerField(blank=True, null=True)  # Diubah dari CharField ke IntegerField karena di DB sebagai foreign key
     finalscore = models.FloatField(blank=True, null=True)
     ispaid = models.IntegerField(blank=True, null=True)
     isenrolled = models.IntegerField(blank=True, null=True)
+    paymentamount = models.IntegerField(blank=True, null=True)  # Ditambahkan sesuai kebutuhan
 
     class Meta:
         managed = False
@@ -68,10 +67,11 @@ class Eda20222023(models.Model):
     graduationyear = models.IntegerField(blank=True, null=True)
     iddataprovinces = models.ForeignKey(Provinsi, models.DO_NOTHING, db_column='iddataprovinces', blank=True, null=True)
     iddataregencies = models.ForeignKey(Regency, models.DO_NOTHING, db_column='iddataregencies', blank=True, null=True)
-    nationality = models.CharField(max_length=255, blank=True, null=True)
+    nationality = models.IntegerField(blank=True, null=True)  # Diubah dari CharField ke IntegerField
     finalscore = models.FloatField(blank=True, null=True)
     ispaid = models.IntegerField(blank=True, null=True)
     isenrolled = models.IntegerField(blank=True, null=True)
+    paymentamount = models.IntegerField(blank=True, null=True)  # Ditambahkan sesuai kebutuhan
 
     class Meta:
         managed = False
