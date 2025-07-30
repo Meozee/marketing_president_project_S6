@@ -3,13 +3,13 @@
 {% block title %}Registrar Approvals{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <h1 class="text-3xl font-bold text-gray-800">Registrar Approvals</h1>
 
-    <!-- Menampilkan pesan (success, error, etc.) -->
+<div class="space-y-6">
+    <h1 class="text-3xl font-bold text-gray-100">Registrar Approvals</h1>
+
     {% if messages %}
         {% for message in messages %}
-            <div class="p-4 mb-4 rounded-lg
+            <div class="p-4 rounded-lg 
                 {% if message.tags == 'success' %} bg-green-100 text-green-800 
                 {% elif message.tags == 'warning' %} bg-yellow-100 text-yellow-800
                 {% else %} bg-red-100 text-red-800 {% endif %}">
@@ -18,60 +18,67 @@
         {% endfor %}
     {% endif %}
 
-    <!-- Navigasi Tab -->
-    <div class="border-b border-gray-200">
-        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-            <button id="tab-user" onclick="switchTab('user')" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600">
+    <div class="border-b border-gray-600">
+        <nav class="-mb-px flex space-x-4 text-sm font-medium">
+            <button id="tab-user"
+                onclick="switchTab('user')"
+                class="px-4 py-2 rounded-t-md font-semibold shadow-inner bg-gray-800 text-blue-400">
                 Manajemen User
             </button>
-            <button id="tab-data" onclick="switchTab('data')" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+            <button id="tab-data"
+                onclick="switchTab('data')"
+                class="px-4 py-2 rounded-t-md text-gray-800 font-bold hover:text-blue-300 hover:bg-gray-800">
                 Manajemen Data
             </button>
         </nav>
     </div>
 
-    <!-- Konten Tab -->
     <div>
-        <!-- ########## KONTEN TAB MANAJEMEN USER ########## -->
+        <!-- ########## TAB USER ########## -->
         <div id="content-user">
-            <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="bg-gray-800 p-6 rounded-xl shadow-md text-white">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-semibold text-lg">Daftar User Sistem</h3>
+                    <h3 class="font-semibold text-xl">Daftar User Sistem</h3>
                     {% if request.user.is_superuser %}
-                        <a href="{% url 'users:user_add' %}" class="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">
-                            + Tambah User Baru
-                        </a>
+                       <div class="text-right mt-4">
+                           <a href="{% url 'users:user_add' %}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">
+                               + Tambah User Baru
+                           </a>
+                       </div>
                     {% endif %}
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
                             <tr>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Username</th>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Nama Lengkap</th>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                                <th class="py-3 px-4 text-left">Username</th>
+                                <th class="py-3 px-4 text-left">Nama Lengkap</th>
+                                <th class="py-3 px-4 text-left">Email</th>
+                                <th class="py-3 px-4 text-left">Role</th>
                                 {% if request.user.is_superuser %}
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                                <th class="py-3 px-4 text-left">Aksi</th>
                                 {% endif %}
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-600">
                             {% for u in all_users %}
-                            <tr>
-                                <td class="py-4 px-4">{{ u.username }}</td>
-                                <td class="py-4 px-4">{{ u.get_full_name|default:"-" }}</td>
-                                <td class="py-4 px-4">{{ u.email|default:"-" }}</td>
-                                <td class="py-4 px-4">
+                            <tr class="table-row">
+                                <td class="py-4 px-4 text-white">{{ u.username }}</td>
+                                <td class="py-4 px-4 text-white">{{ u.get_full_name|default:"-" }}</td>
+                                <td class="py-4 px-4 text-white">{{ u.email|default:"-" }}</td>
+                                <td class="py-4 px-4 font-semibold 
+                                    {% if u.is_superuser %}text-purple-400
+                                    {% elif u.is_staff %}text-sky-300
+                                    {% else %}text-white{% endif %}">
                                     {% if u.is_superuser %}Superadmin
                                     {% elif u.is_staff %}Admin
                                     {% else %}Staff{% endif %}
                                 </td>
                                 {% if request.user.is_superuser %}
                                 <td class="py-4 px-4 space-x-2">
-                                    <a href="{% url 'users:user_edit' u.pk %}" class="text-blue-600 hover:text-blue-900">Edit</a>
+                                    <a href="{% url 'users:user_edit' u.pk %}" class="text-blue-400 hover:underline action-buttons">Edit</a>
                                     {% if request.user != u %}
-                                    <a href="{% url 'users:user_delete' u.pk %}" class="text-red-600 hover:text-red-900">Hapus</a>
+                                    <a href="{% url 'users:user_delete' u.pk %}" class="text-red-400 hover:underline action-buttons">Hapus</a>
                                     {% endif %}
                                 </td>
                                 {% endif %}
@@ -83,88 +90,85 @@
             </div>
         </div>
 
-        <!-- ########## KONTEN TAB MANAJEMEN DATA ########## -->
+        <!-- ########## TAB DATA ########## -->
         <div id="content-data" class="hidden">
-            <!-- Form Upload -->
             {% if request.user.is_staff %}
-            <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h3 class="font-semibold text-lg mb-4 border-b pb-2">Upload Dataset Baru</h3>
+            <div class="bg-gray-800 p-6 rounded-xl shadow-md text-white mb-6">
+                <h3 class="font-semibold text-xl mb-4 border-b border-gray-600 pb-2">Upload Dataset Baru</h3>
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">{{ upload_form.nama_data.label }}</label>
-                            {{ upload_form.nama_data }}
+                            <label class="block text-sm font-medium">Nama Data</label>
+                            <input type="text" name="nama_data" placeholder="Masukkan nama data"
+                                class="bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-150">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">{{ upload_form.file_path.label }}</label>
+                            <label class="block text-sm font-medium">File Dataset</label>
                             {{ upload_form.file_path }}
                         </div>
                         <div class="pt-2">
-                            <button type="submit" class="bg-blue-900 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-800">Upload</button>
+                            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg">
+                                Upload
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
             {% endif %}
-            
-            <!-- Tabel Histori Data -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h3 class="font-semibold text-lg mb-4">Histori Upload Dataset</h3>
+
+            <div class="bg-gray-800 p-6 rounded-xl shadow-md text-white">
+                <h3 class="font-semibold text-xl mb-4">Histori Upload Dataset</h3>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
                             <tr>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Nama Data</th>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Pengunggah</th>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Tgl Upload</th>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                                <th class="py-3 px-4 text-left">Nama Data</th>
+                                <th class="py-3 px-4 text-left">Pengunggah</th>
+                                <th class="py-3 px-4 text-left">Tgl Upload</th>
+                                <th class="py-3 px-4 text-left">Status</th>
+                                <th class="py-3 px-4 text-left">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            {% for upload in all_uploads %}
+                        <tbody class="divide-y divide-gray-600">
+                            {% if all_uploads %}
+                                {% for upload in all_uploads %}
+                                <tr class="table-row">
+                                    <td class="py-4 px-4">{{ upload.nama_data }}</td>
+                                    <td class="py-4 px-4">{{ upload.uploader.username|default:"N/A" }}</td>
+                                    <td class="py-4 px-4">{{ upload.tanggal_upload|date:"d M Y, H:i" }}</td>
+                                    <td class="py-4 px-4">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                            {% if upload.status == 'APPROVED' %} bg-green-100 text-green-800
+                                            {% elif upload.status == 'PENDING' %} bg-yellow-100 text-yellow-800
+                                            {% else %} bg-red-100 text-red-800 {% endif %}">
+                                            {{ upload.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4">
+                                        <a href="{% url 'administration:view_dataset' upload.id_data %}" target="_blank" class="text-indigo-400 hover:underline">View</a>
+                                        {% if request.user.is_superuser and upload.status == 'PENDING' %}
+                                        <form method="POST" class="inline ml-2">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="approve_id" value="{{ upload.id_data }}">
+                                            <button type="submit" class="text-green-400 hover:underline">Approve</button>
+                                        </form>
+                                        <form method="POST" class="inline ml-2">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="reject_id" value="{{ upload.id_data }}">
+                                            <button type="submit" class="text-red-400 hover:underline">Reject</button>
+                                        </form>
+                                        {% elif upload.status != 'PENDING' %}
+                                        <span class="ml-2 text-gray-400 text-xs">by {{ upload.approver.username|default:"System" }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
                             <tr>
-                                <td class="py-4 px-4">{{ upload.nama_data }}</td>
-                                <td class="py-4 px-4">{{ upload.uploader.username|default:"N/A" }}</td>
-                                <td class="py-4 px-4">{{ upload.tanggal_upload|date:"d M Y, H:i" }}</td>
-                                <td class="py-4 px-4">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        {% if upload.status == 'APPROVED' %} bg-green-100 text-green-800
-                                        {% elif upload.status == 'PENDING' %} bg-yellow-100 text-yellow-800
-                                        {% else %} bg-red-100 text-red-800 {% endif %}">
-                                        {{ upload.get_status_display }}
-                                    </span>
-                                </td>
-                                <td class="py-4 px-4 whitespace-nowrap text-sm font-medium">
-                                    <!-- FIX: Tambahkan tombol View di sini -->
-                                    <a href="{% url 'administration:view_dataset' upload.id_data %}" target="_blank" class="text-indigo-600 hover:text-indigo-900">View</a>
-                                    
-                                    {% if request.user.is_superuser and upload.status == 'PENDING' %}
-                                    <span class="mx-1">/</span>
-                                    <form method="POST" class="inline">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="approve_id" value="{{ upload.id_data }}">
-                                        <button type="submit" class="text-green-600 hover:text-green-900">Approve</button>
-                                    </form>
-                                    <span class="mx-1">/</span>
-                                    <form method="POST" class="inline">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="reject_id" value="{{ upload.id_data }}">
-                                        <button type="submit" class="text-red-600 hover:text-red-900">Reject</button>
-                                    </form>
-                                    {% elif upload.status != 'PENDING' %}
-                                    <span class="ml-2 text-gray-500">
-                                        by {{ upload.approver.username|default:"System" }}
-                                    </span>
-                                    {% endif %}
-                                </td>
+                                <td colspan="5" class="text-center py-4 text-gray-300">Belum ada dataset yang diunggah. Klik tombol di atas untuk mengunggah dataset baru!</td>
                             </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center py-4">Belum ada data yang diunggah.</td>
-                            </tr>
-                            {% endfor %}
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -175,17 +179,32 @@
 
 <script>
     function switchTab(tabName) {
-        // Sembunyikan semua konten
-        document.getElementById('content-user').classList.add('hidden');
-        document.getElementById('content-data').classList.add('hidden');
+        const tabs = ['user', 'data'];
+        tabs.forEach(tab => {
+            const content = document.getElementById('content-' + tab);
+            const button = document.getElementById('tab-' + tab);
 
-        // Reset style semua tombol tab
-        document.getElementById('tab-user').className = 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
-        document.getElementById('tab-data').className = 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
-        
-        // Tampilkan konten yang dipilih dan set style tombolnya
-        document.getElementById('content-' + tabName).classList.remove('hidden');
-        document.getElementById('tab-' + tabName).className = 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600';
+            if (tab === tabName) {
+                content.classList.remove('hidden');
+                button.classList.add('active');
+                button.className = 'px-4 py-2 rounded-t-md font-semibold shadow-inner bg-gray-800 text-blue-400';
+            } else {
+                content.classList.add('hidden');
+                button.classList.remove('active');
+                button.className = 'px-4 py-2 rounded-t-md text-gray-800 font-bold hover:text-blue-300 hover:bg-gray-800';
+            }
+        });
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        switchTab('data');
+    });
 </script>
+
+<style>
+    .table-row:hover {
+        background-color: #444; /* Warna latar belakang saat hover */
+    }
+</style>
+
 {% endblock %}

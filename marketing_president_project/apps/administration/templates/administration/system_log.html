@@ -3,34 +3,147 @@
 {% block title %}System Activity Log{% endblock %}
 
 {% block content %}
-<div class="bg-white p-6 rounded-lg shadow-md">
-    <h1 class="text-3xl font-bold text-gray-800 mb-4">System Activity Log</h1>
-    <p class="text-gray-600 mb-6">Menampilkan 50 aktivitas terbaru yang tercatat di sistem.</p>
-    
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white">
-            <thead class="bg-gray-50">
+<style>
+    .log-container {
+        background-color: #0f172a;
+        padding: 32px;
+        border-radius: 16px;
+        color: #f1f5f9;
+        font-family: 'Nunito', sans-serif;
+        margin-top: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .log-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin-bottom: 6px;
+        text-align: center;
+    }
+
+    .log-subtitle {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .last-updated {
+        text-align: right;
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-bottom: 12px;
+        font-style: italic;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .table-wrapper::after {
+        content: "← Geser untuk melihat lebih banyak →";
+        position: absolute;
+        bottom: -1.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.75rem;
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .log-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #1e293b;
+        min-width: 700px;
+    }
+
+    .log-table thead {
+        background-color: #334155;
+        color: #cbd5e1;
+    }
+
+    .log-table th {
+    font-size: 1rem; /* sebelumnya 0.85rem */
+    font-weight: 800; /* lebih bold */
+    letter-spacing: 0.6px;
+    padding: 16px 24px;
+    text-align: left;
+    border-bottom: 1px solid #475569;
+    color: #f1f5f9; /* lebih cerah agar kontras */
+    text-transform: uppercase; /* opsional kalau mau kesan header */
+    }
+
+
+    .log-table td {
+        padding: 14px 20px;
+        text-align: left;
+        border-bottom: 1px solid #334155;
+    }
+
+    .log-table tbody tr:hover {
+        background-color: #273549;
+    }
+
+    .log-table td strong {
+        font-weight: 700;
+        color: #f8fafc;
+    }
+
+    .log-table td .current-user {
+        color: #3b82f6;
+    }
+
+    .no-logs {
+        text-align: center;
+        padding: 24px;
+        color: #94a3b8;
+        font-style: italic;
+    }
+</style>
+
+<div class="log-container">
+    <div class="log-title">System Activity Log</div>
+    <div class="log-subtitle">Menampilkan 50 aktivitas terbaru yang tercatat di sistem</div>
+
+    {% if logs %}
+    <div class="last-updated">
+        Last update: <span style="color:#f8fafc;">{{ logs.0.action_time|date:"d M Y, H:i:s" }}</span>
+    </div>
+    {% endif %}
+
+    <div class="table-wrapper">
+        <table class="log-table">
+            <thead>
                 <tr>
-                    <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
-                    <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-                    <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Aksi / Deskripsi</th>
-                    <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase">Objek</th>
+                    <th>Waktu</th>
+                    <th>User</th>
+                    <th>Aksi / Deskripsi</th>
+                    <th>Objek</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody>
                 {% for log in logs %}
                 <tr>
-                    <td class="py-4 px-4 whitespace-nowrap">{{ log.action_time|date:"d M Y, H:i:s" }}</td>
-                    <td class="py-4 px-4 whitespace-nowrap">{{ log.user.username }}</td>
-                    <td class="py-4 px-4">
-                        <!-- FIX: Tampilkan pesan custom yang lebih deskriptif -->
-                        {{ log.change_message }}
+                    <td style="font-family: monospace;"><strong>{{ log.action_time|date:"d M Y, H:i:s" }}</strong></td>
+                    <td>
+                        <strong class="{% if request.user.username == log.user.username %}current-user{% endif %}">
+                            {{ log.user.username }}
+                        </strong>
                     </td>
-                    <td class="py-4 px-4 whitespace-nowrap">{{ log.object_repr }} ({{ log.content_type }})</td>
+                    <td title="{{ log.change_message }}">
+                        <strong>{{ log.change_message|truncatechars:40 }}</strong>
+                    </td>
+                    <td><strong>{{ log.object_repr }}</strong> <span style="color:#94a3b8;">({{ log.content_type }})</span></td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center py-4">Tidak ada aktivitas tercatat.</td>
+                    <td colspan="4" class="no-logs">Tidak ada aktivitas tercatat.</td>
                 </tr>
                 {% endfor %}
             </tbody>

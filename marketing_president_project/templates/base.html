@@ -6,126 +6,825 @@
     <title>{% block title %}Marketing Dashboard{% endblock %} - President University</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#1a202c',
+                            100: '#2d3748',
+                            200: '#4a5568',
+                            300: '#718096',
+                            400: '#a0aec0',
+                            500: '#2b6cb0',
+                            600: '#2c5282',
+                            700: '#2a4365',
+                            800: '#1a202c',
+                            900: '#171923',
+                        },
+                        secondary: {
+                            50: '#2d3748',
+                            100: '#4a5568',
+                            200: '#718096',
+                            300: '#a0aec0',
+                            400: '#cbd5e0',
+                            500: '#4a5568',
+                            600: '#2d3748',
+                            700: '#1a202c',
+                            800: '#171923',
+                            900: '#0f121a',
+                        },
+                        accent: {
+                            400: '#4fd1c5',
+                            500: '#38b2ac',
+                        },
+                        dark: {
+                            800: '#1a202c',
+                            900: '#171923',
+                        },
+                        platinum: '#4a5568',
+                        gold: '#a0aec0',
+                        silver: '#718096',
+                        regal: '#1a202c',
+                        royal: '#171923',
+                        pearl: '#2d3748',
+                        diamond: '#4a5568'
+                    },
+                    fontFamily: {
+                        sans: ['"Inter"', 'ui-sans-serif', 'system-ui'],
+                        display: ['"Playfair Display"', '"Plus Jakarta Sans"', '"Inter"', 'ui-sans-serif'],
+                        elegant: ['"Playfair Display"', 'serif'],
+                        luxury: ['"Cormorant Garamond"', '"Playfair Display"', 'serif'],
+                        majestic: ['"Marcellus"', '"Cormorant Garamond"', 'serif']
+                    },
+                    boxShadow: {
+                        'luxury': '0 30px 70px -15px rgba(0, 0, 0, 0.5)',
+                        'luxury-md': '0 25px 50px -10px rgba(0, 0, 0, 0.4)',
+                        'inner-luxury': 'inset 0 6px 15px 0 rgba(0, 0, 0, 0.2)',
+                        'gold-glow': '0 0 25px rgba(160, 174, 192, 0.3)',
+                        'platinum-glow': '0 0 25px rgba(74, 85, 104, 0.3)',
+                        'diamond-glow': '0 0 30px rgba(74, 85, 104, 0.4)'
+                    },
+                    backgroundImage: {
+                        'gradient-luxury': 'linear-gradient(145deg, #2b6cb0 0%, #1a202c 100%)',
+                        'gradient-regal': 'linear-gradient(145deg, #1a202c 0%, #171923 100%)',
+                        'gradient-gold': 'linear-gradient(145deg, rgba(160, 174, 192, 0.2) 0%, rgba(113, 128, 150, 0.2) 100%)',
+                        'gradient-silver': 'linear-gradient(145deg, rgba(113, 128, 150, 0.2) 0%, rgba(74, 85, 104, 0.2) 100%)',
+                        'gradient-pearl': 'linear-gradient(145deg, rgba(45, 55, 72, 0.9) 0%, rgba(23, 25, 35, 0.9) 100%)',
+                        'gradient-diamond': 'linear-gradient(145deg, rgba(74, 85, 104, 0.9) 0%, rgba(23, 25, 35, 0.9) 100%)'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-in-out',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 3s ease-in-out infinite alternate',
+                        'subtle-shine': 'subtleShine 8s linear infinite',
+                        'luxuriousGlow': 'luxuriousGlow 4s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-12px)' }
+                        },
+                        glow: {
+                            '0%': { 'box-shadow': '0 0 10px rgba(160, 174, 192, 0.2)' },
+                            '100%': { 'box-shadow': '0 0 20px rgba(160, 174, 192, 0.4)' }
+                        },
+                        subtleShine: {
+                            '0%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                            '100%': { 'background-position': '0% 50%' }
+                        },
+                        luxuriousGlow: {
+                            '0%': { box-shadow: '0 0 10px rgba(160, 174, 192, 0.3), 0 0 20px rgba(43, 108, 176, 0.2)' },
+                            '50%': { box-shadow: '0 0 20px rgba(160, 174, 192, 0.5), 0 0 30px rgba(79, 209, 197, 0.4)' },
+                            '100%': { box-shadow: '0 0 15px rgba(160, 174, 192, 0.4), 0 0 25px rgba(43, 108, 176, 0.3)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <!-- Load Font Awesome untuk Ikon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Load Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Marcellus&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles jika diperlukan */
+        :root {
+            --sidebar-width: 320px;
+            --sidebar-minimized: 100px;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #171923 0%, #1a202c 100%);
+            color: #e2e8f0;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        .sidebar-link.active {
-            background-color: #FBBF24; /* Warna kuning untuk link aktif */
-            color: #1E3A8A; /* Warna biru tua untuk teks */
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(145deg, rgba(23, 25, 35, 0.98) 0%, rgba(26, 32, 44, 0.98) 100%);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 10px 0 40px rgba(0, 0, 0, 0.4);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(74, 85, 104, 0.7);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 50;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            height: 110px;
+            border-bottom: 1px solid rgba(74, 85, 104, 0.5);
+            display: flex;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(145deg, rgba(23, 25, 35, 0.96) 0%, rgba(26, 32, 44, 0.96) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #a0aec0, #2b6cb0, #a0aec0);
+            background-size: 200% 100%;
+            animation: subtleShine 6s linear infinite;
+        }
+        
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(43, 108, 176, 0.4), transparent);
+        }
+        
+        .sidebar-header .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #e2e8f0;
+            font-family: 'Marcellus', serif;
             font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: 0.5px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .sidebar-link.active i {
-            color: #1E3A8A;
+        
+        .sidebar-header .logo i {
+            margin-right: 0.75rem;
+            color: #a0aec0;
+            font-size: 1.75rem;
+            transition: all 0.4s ease;
+            text-shadow: 0 3px 6px rgba(160, 174, 192, 0.3);
+        }
+        
+        .sidebar-header .logo:hover {
+            transform: translateX(5px);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar-header .logo:hover i {
+            transform: rotate(20deg) scale(1.15);
+            color: #4fd1c5;
+            text-shadow: 0 4px 8px rgba(79, 209, 197, 0.4);
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%231a202c' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        
+        .sidebar-section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .sidebar-section-title {
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.2em;
+            position: relative;
+        }
+        
+        .sidebar-section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.75rem;
+            left: 2rem;
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, #a0aec0, #2b6cb0);
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            color: #e2e8f0;
+            border-radius: 0.75rem;
+            margin: 0 1rem;
+            width: calc(100% - 2rem);
+            box-sizing: border-box;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(23, 25, 35, 0.9) 0%, rgba(26, 32, 44, 0.9) 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(160, 174, 192, 0.15), transparent);
+            transition: all 0.8s ease;
+        }
+        
+        .sidebar-link:hover {
+            background: linear-gradient(145deg, rgba(26, 32, 44, 0.8) 0%, rgba(44, 82, 130, 0.8) 100%);
+            color: #4fd1c5;
+            transform: translateX(8px);
+            box-shadow: 0 12px 25px -5px rgba(43, 108, 176, 0.2);
+        }
+        
+        .sidebar-link:hover::before {
+            left: 100%;
+        }
+        
+        .sidebar-link.active {
+            background: linear-gradient(145deg, #1a202c 0%, #2b6cb0 100%);
+            color: #4fd1c5;
+            font-weight: 600;
+            box-shadow: 0 10px 30px -5px rgba(43, 108, 176, 0.3), inset 0 3px 8px rgba(23, 25, 35, 0.3);
+            border-left: 4px solid #a0aec0;
+        }
+        
+        .sidebar-link .icon {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.25rem;
+            background: linear-gradient(145deg, rgba(45, 55, 72, 0.95) 0%, rgba(74, 85, 104, 0.8) 100%);
+            border-radius: 0.6rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sidebar-link:hover .icon,
+        .sidebar-link.active .icon {
+            transform: scale(1.2);
+            background: linear-gradient(145deg, rgba(23, 25, 35, 0.95) 0%, rgba(26, 32, 44, 0.8) 100%);
+            box-shadow: 0 5px 15px rgba(43, 108, 176, 0.2);
+        }
+        
+        .sidebar-link .icon i {
+            color: #2b6cb0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-link.active .icon i {
+            color: #a0aec0;
+        }
+        
+        .sidebar-toggle-btn {
+            position: absolute;
+            top: 1.75rem;
+            right: -1.5rem;
+            background: linear-gradient(145deg, #a0aec0 0%, #4a5568 50%, #2b6cb0 100%);
+            border: 2px solid rgba(160, 174, 192, 0.8);
+            border-radius: 50%;
+            padding: 0.9rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(43, 108, 176, 0.5), inset 0 0 10px rgba(160, 174, 192, 0.3);
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+            animation: luxuriousGlow 4s ease-in-out infinite alternate;
+        }
+        
+        .sidebar-toggle-btn:hover {
+            transform: translateX(8px) rotate(10deg) scale(1.2);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(79, 209, 197, 0.6), inset 0 0 15px rgba(160, 174, 192, 0.5);
+            background: linear-gradient(145deg, #2b6cb0 0%, #a0aec0 100%);
+            border-color: #4fd1c5;
+        }
+        
+        .sidebar-toggle-btn i {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 8px rgba(79, 209, 197, 0.5);
+        }
+        
+        .sidebar-toggle-btn:hover i {
+            color: #4fd1c5;
+            transform: scale(1.3);
+            text-shadow: 0 0 12px rgba(79, 209, 197, 0.8);
+        }
+        
+        .main-content-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: calc(100% - var(--sidebar-width));
+        }
+        
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: radial-gradient(circle at 10% 20%, rgba(23, 25, 35, 0.98) 0%, rgba(26, 32, 44, 0.98) 90%);
+            padding: 3rem;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%232b6cb0' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+            padding-top: 110px;
+        }
+        
+        .sidebar-minimized {
+            width: var(--sidebar-minimized) !important;
+        }
+        
+        .sidebar-minimized .sidebar-link span,
+        .sidebar-minimized .sidebar-section-title,
+        .sidebar-minimized .sidebar-header .logo span {
+            display: none;
+        }
+        
+        .sidebar-minimized ~ .main-content-container {
+            margin-left: var(--sidebar-minimized);
+            width: calc(100% - var(--sidebar-minimized));
+        }
+        
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 30;
+            height: 110px;
+            border-bottom: 1px solid rgba(74, 85, 104, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 3rem 0 calc(var(--sidebar-width) + 3rem);
+            background: linear-gradient(145deg, rgba(23, 25, 35, 0.98) 0%, rgba(45, 55, 72, 0.98) 100%);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .sidebar-minimized ~ .nav-header {
+            padding-left: calc(var(--sidebar-minimized) + 3rem);
+        }
+        
+        .nav-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #a0aec0, #2b6cb0, #a0aec0);
+            background-size: 200% 100%;
+            animation: subtleShine 6s linear infinite;
+        }
+        
+        .nav-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(43, 108, 176, 0.5), transparent);
+        }
+        
+        .nav-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            font-family: 'Marcellus', serif;
+            letter-spacing: 0.5px;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            background: linear-gradient(145deg, rgba(23, 25, 35, 0.96) 0%, rgba(26, 32, 44, 0.96) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(74, 85, 104, 0.7);
+        }
+        
+        .profile-btn:hover {
+            background: linear-gradient(145deg, rgba(26, 32, 44, 0.96) 0%, rgba(44, 82, 130, 0.96) 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .profile-btn .avatar {
+            width: 2.75rem;
+            height: 2.75rem;
+            background: linear-gradient(145deg, #2b6cb0 0%, #1a202c 100%);
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 1.25rem;
+            box-shadow: 0 0 20px rgba(43, 108, 176, 0.4);
+            transition: all 0.4s ease;
+        }
+        
+        .profile-btn:hover .avatar {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(43, 108, 176, 0.5);
+            background: linear-gradient(145deg, #2b6cb0 0%, #2c5282 100%);
+        }
+        
+        .mobile-sidebar-toggle {
+            display: none;
+            margin-right: 1.75rem;
+            padding: 0.85rem;
+            border-radius: 0.6rem;
+            background: linear-gradient(145deg, rgba(23, 25, 35, 0.95) 0%, rgba(26, 32, 44, 0.95) 100%);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .mobile-sidebar-toggle:hover {
+            background: linear-gradient(145deg, rgba(26, 32, 44, 0.95) 0%, rgba(44, 82, 130, 0.95) 100%);
+            transform: rotate(90deg) scale(1.1);
+        }
+        
+        .mobile-sidebar-toggle i {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(45, 55, 72, 0.7);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(145deg, rgba(43, 108, 176, 0.8) 0%, rgba(26, 32, 44, 0.8) 100%);
+            border-radius: 10px;
+            border: 3px solid rgba(23, 25, 35, 0.4);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(145deg, rgba(43, 108, 176, 0.95) 0%, rgba(26, 32, 44, 0.95) 100%);
+        }
+        
+        /* Profile Sidebar Styles */
+        #profile-sidebar {
+            background: linear-gradient(145deg, rgba(23, 25, 35, 0.98) 0%, rgba(26, 32, 44, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 15px 0 50px rgba(0, 0, 0, 0.4);
+            border-right: 1px solid rgba(74, 85, 104, 0.8);
+            z-index: 60;
+        }
+        
+        #profile-sidebar .sidebar-header {
+            background: linear-gradient(145deg, rgba(23, 25, 35, 0.96) 0%, rgba(26, 32, 44, 0.96) 100%);
+        }
+        
+        .avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #2b6cb0 0%, #1a202c 100%);
+            color: #e2e8f0;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(43, 108, 176, 0.4);
+            transition: all 0.4s ease;
+        }
+        
+        .profile-card {
+            background: linear-gradient(145deg, rgba(23, 25, 35, 0.96) 0%, rgba(26, 32, 44, 0.96) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 1.25rem;
+            box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.3);
+            overflow: auto;
+            position: relative;
+            padding: 2.5rem;
+        }
+        
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #a0aec0, #2b6cb0, #a0aec0);
+            background-size: 200% 100%;
+            animation: subtleShine 6s linear infinite;
+        }
+        
+        .back-btn {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(43, 108, 176, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .back-btn:hover {
+            transform: translateX(-8px);
+            box-shadow: 0 12px 30px rgba(43, 108, 176, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 100;
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content-container {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding-top: 110px; 
+            }
+            
+            .nav-header {
+                left: 0 !important;
+                width: 100% !important;
+                padding: 0 2rem;
+                height: 100px;
+            }
+            
+            .nav-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .mobile-sidebar-toggle {
+                display: flex;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-100">
-    <div class="flex h-screen">
+<body class="antialiased">
+    <div class="app-container">
         <!-- Main Sidebar -->
-        <aside id="main-sidebar" class="w-64 bg-white text-gray-700 flex flex-col shadow-lg transition-transform duration-300">
-            <div class="h-20 flex items-center justify-center border-b">
-                <a href="{% url 'dashboard:home' %}" class="text-2xl font-bold text-blue-900">PRESIDENT UNIV</a>
+        <aside id="main-sidebar" class="sidebar">
+            <button id="sidebar-toggle" class="sidebar-toggle-btn">
+                <i class="fas fa-gem"></i>
+            </button>
+            <div class="sidebar-header">
+                <a href="{% url 'dashboard:home' %}" class="logo">
+                    <i class="fas fa-university"></i>
+                    <span>President University</span>
+                </a>
             </div>
-            <nav class="flex-1 px-4 py-6 space-y-2">
-                <!-- Academic Dashboard Section -->
-                <div>
-                    <h3 class="px-4 mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">Academic Dashboard</h3>
-                    <a href="{% url 'dashboard:main_dashboard' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
-                        <i class="fas fa-chart-pie w-6 text-gray-500"></i>
-                        <span class="ml-3">Dashboard</span>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-section-title">Academic Dashboard</h3>
+                    <a href="{% url 'dashboard:main_dashboard' %}" class="sidebar-link">
+                        <div class="icon"><i class="fas fa-chart-pie"></i></div>
+                        <span>Dashboard</span>
                     </a>
-                    <a href="{% url 'funnel:funnel_page' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
-                        <i class="fas fa-filter w-6 text-gray-500"></i>
-                        <span class="ml-3">Funnel Enrollment</span>
+                    <a href="{% url 'funnel:funnel_page' %}" class="sidebar-link">
+                        <div class="icon"><i class="fas fa-filter"></i></div>
+                        <span>Funnel</span>
                     </a>
-                    <a href="{% url 'testing:testing' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
-                        <i class="fas fa-vial w-6 text-gray-500"></i>
-                        <span class="ml-3">Data Testing</span>
+                    <a href="{% url 'testing:testing' %}" class="sidebar-link">
+                        <div class="icon"><i class="fas fa-vial"></i></div>
+                        <span>Testing</span>
                     </a>
                 </div>
-
-                <!-- Administration Section (HANYA UNTUK STAFF/ADMIN & SUPERADMIN) -->
                 {% if request.user.is_staff %}
-                <div class="pt-4">
-                    <h3 class="px-4 mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">Administration</h3>
-                    <a href="{% url 'users:approvals' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
-                        <i class="fas fa-user-check w-6 text-gray-500"></i>
-                        <span class="ml-3">Registrar Approvals</span>
+                <div class="sidebar-section">
+                    <h3 class="sidebar-section-title">Administration</h3>
+                    <a href="{% url 'users:approvals' %}" class="sidebar-link">
+                        <div class="icon"><i class="fas fa-user-check"></i></div>
+                        <span>Register Approvals</span>
                     </a>
-                    <a href="{% url 'administration:logs' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
-                        <i class="fas fa-cogs w-6 text-gray-500"></i>
-                        <span class="ml-3">System Administration</span>
+                    <a href="{% url 'administration:logs' %}" class="sidebar-link">
+                        <div class="icon"><i class="fas fa-cogs"></i></div>
+                        <span>System Administration</span>
                     </a>
                 </div>
                 {% endif %}
+                <div class="sidebar-section">
+                    <h3 class="sidebar-section-title">Marketing Team</h3>
+                    <a href="{% url 'core:about_us' %}" class="sidebar-link">
+                        <div class="icon"><i class="fas fa-users"></i></div>
+                        <span>About Us</span>
+                    </a>
+                    <a href="{% url 'users:logout' %}" class="sidebar-link">
+                        <div class="icon"><i class="fas fa-sign-out-alt"></i></div>
+                        <span>Logout</span>
+                    </a>
+                </div>
             </nav>
-            <div class="px-4 py-6 border-t">
-                <h3 class="px-4 mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">Marketing Team</h3>
-                <a href="{% url 'core:about_us' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
-                   <i class="fas fa-users w-6 text-gray-500"></i>
-                   <span class="ml-3">About Our Team</span>
-               </a>
-               <a href="{% url 'users:logout' %}" class="sidebar-link flex items-center px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors duration-200">
-                   <i class="fas fa-sign-out-alt w-6 text-gray-500"></i>
-                   <span class="ml-3">Logout</span>
-               </a>
-           </div>
-
         </aside>
 
-        <!-- Profile Sidebar (awalnya tersembunyi) -->
-        <aside id="profile-sidebar" class="w-64 bg-white text-gray-700 flex-col shadow-lg transition-transform duration-300 hidden">
-            <div class="h-20 flex items-center justify-center border-b">
-                <h1 class="text-2xl font-bold text-blue-900">Profil User</h1>
-            </div>
-            <div class="flex-1 px-6 py-6 space-y-4">
-                <div>
-                    <label class="text-xs font-semibold text-gray-500">Username</label>
-                    <p class="text-lg">{{ logged_in_user.username }}</p>
+        <!-- Main Content Area -->
+        <div class="main-content-container">
+            <header class="nav-header">
+                <div class="flex items-center">
+                    <button id="mobile-sidebar-toggle" class="mobile-sidebar-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>{% block header %}{% endblock %}</h1>
                 </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-500">Nama</label>
-                    <p class="text-lg">{{ logged_in_user.get_full_name|default:"-" }}</p>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-500">Email</label>
-                    <p class="text-lg">{{ logged_in_user.email|default:"-" }}</p>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-gray-500">Status</label>
-                    <p class="text-lg font-semibold text-blue-800">{{ user_role }}</p>
-                </div>
-            </div>
-            <div class="px-4 py-6 border-t">
-                <button onclick="toggleSidebar()" class="w-full flex items-center justify-center px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">
-                    <i class="fas fa-arrow-left mr-2"></i>
-                    <span>Kembali ke Menu</span>
-                </button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col">
-            <header class="h-20 bg-white border-b flex items-center justify-end px-8">
-                <button onclick="toggleSidebar()" class="flex items-center space-x-2 p-2 bg-blue-900 text-white rounded-full hover:bg-blue-800">
-                    <i class="fas fa-user"></i>
-                    <span class="text-sm font-medium">{{ logged_in_user.username|capfirst }}</span>
+                <button onclick="toggleSidebar()" class="profile-btn">
+                    <div class="avatar">{{ logged_in_user.username|first|upper }}</div>
+                    <div class="hidden md:block ml-4">
+                        <p class="text-sm font-medium text-gray-300">{{ logged_in_user.username|capfirst }}</p>
+                        <p class="text-xs text-gray-500">{{ user_role }}</p>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs text-gray-500 ml-2 hidden md:block"></i>
                 </button>
             </header>
-            <div class="flex-1 p-8 overflow-y-auto">
-                {% block content %}{% endblock %}
+            
+            <main class="main-content">
+                {% block content %}
+                    <div style="height: 2000px;">
+                        <button onclick="alert('Clicked!')">Test Click</button>
+                        <p>Konten panjang untuk menguji scroll...</p>
+                    </div>
+                {% endblock %}
+            </main>
+        </div>
+
+        <!-- Profile Sidebar -->
+        <aside id="profile-sidebar" class="sidebar hidden">
+            <div class="sidebar-header">
+                <h1 class="text-2xl font-bold text-primary-300 font-majestic tracking-tight">User Profile</h1>
             </div>
-        </main>
+            <div class="flex-1 p-6 space-y-8 overflow-y-auto">
+                <div class="profile-card">
+                    <div class="flex justify-center mb-8">
+                        <div class="avatar w-32 h-32 text-5xl font-bold animate-float">{{ logged_in_user.username|first|upper }}</div>
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-2xl font-semibold text-gray-200 font-majestic">{{ logged_in_user.get_full_name|default:logged_in_user.username }}</h2>
+                        <p class="text-sm text-primary-400 font-medium mt-3">{{ user_role }}</p>
+                    </div>
+                </div>
+                <div class="space-y-8">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Account Details</label>
+                        <div class="mt-6 space-y-6">
+                            <div class="flex items-start">
+                                <div class="icon bg-gradient-to-br from-platinum to-silver shadow-sm"><i class="fas fa-user text-primary-400"></i></div>
+                                <div class="ml-4">
+                                    <p class="text-xs font-medium text-gray-500">Username</p>
+                                    <p class="text-gray-200 font-medium text-lg">{{ logged_in_user.username }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="icon bg-gradient-to-br from-platinum to-silver shadow-sm"><i class="fas fa-envelope text-primary-400"></i></div>
+                                <div class="ml-4">
+                                    <p class="text-xs font-medium text-gray-500">Email</p>
+                                    <p class="text-gray-200 font-medium text-lg">{{ logged_in_user.email|default:"-" }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="icon bg-gradient-to-br from-platinum to-silver shadow-sm"><i class="fas fa-clock text-primary-400"></i></div>
+                                <div class="ml-4">
+                                    <p class="text-xs font-medium text-gray-500">Last Login</p>
+                                    <p class="text-gray-200 font-medium text-lg">{{ logged_in_user.last_login|date:"d M Y H:i"|default:"Never" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100/50">
+                <button onclick="toggleSidebar()" class="back-btn w-full flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-primary-600 to-primary-800 text-white hover:from-primary-700 hover:to-primary-900 transition-all duration-300">
+                    <i class="fas fa-arrow-left mr-3"></i>
+                    <span>Back to Dashboard</span>
+                </button>
+            </div>
+        </aside>
     </div>
-<script>
-    function toggleSidebar() {
-        document.getElementById('main-sidebar').classList.toggle('hidden');
-        document.getElementById('profile-sidebar').classList.toggle('hidden');
-    }
-</script>
+
+    <script>
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const mainSidebar = document.getElementById('main-sidebar');
+        const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+        
+        sidebarToggle.addEventListener('click', function() {
+            mainSidebar.classList.toggle('sidebar-minimized');
+            const icon = this.querySelector('i');
+            if (mainSidebar.classList.contains('sidebar-minimized')) {
+                icon.classList.remove('fa-gem');
+                icon.classList.add('fa-diamond');
+            } else {
+                icon.classList.remove('fa-diamond');
+                icon.classList.add('fa-gem');
+            }
+        });
+        
+        mobileSidebarToggle.addEventListener('click', function() {
+            mainSidebar.classList.toggle('active');
+        });
+        
+        function toggleSidebar() {
+            const mainSidebar = document.getElementById('main-sidebar');
+            const profileSidebar = document.getElementById('profile-sidebar');
+
+            if (profileSidebar.classList.contains('hidden')) {
+                profileSidebar.classList.remove('hidden');
+                mainSidebar.classList.add('hidden');
+            } else {
+                profileSidebar.classList.add('hidden');
+                mainSidebar.classList.remove('hidden');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUrl = window.location.pathname;
+            const links = document.querySelectorAll('.sidebar-link');
+            links.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentUrl) {
+                    link.classList.add('active');
+                }
+            });
+            
+            document.addEventListener('click', function(event) {
+                const profileSidebar = document.getElementById('profile-sidebar');
+                const profileButton = document.querySelector('[onclick="toggleSidebar()"]');
+                const mainContent = document.querySelector('.main-content-container');
+                if (!profileSidebar.classList.contains('hidden') && 
+                    !profileSidebar.contains(event.target) && 
+                    !profileButton.contains(event.target)) {
+                    toggleSidebar();
+                }
+            });
+            
+            // Add animation class to elements
+            setTimeout(() => {
+                document.querySelectorAll('.sidebar-link').forEach((link, index) => {
+                    link.style.animationDelay = `${index * 0.05}s`;
+                    link.classList.add('animate-fade-in');
+                });
+            }, 300);
+        });
+    </script>
 </body>
 </html>
