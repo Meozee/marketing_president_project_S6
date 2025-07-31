@@ -15,7 +15,8 @@ urlpatterns = [
     path('', include('apps.core.urls')),
     path('', include('apps.dashboard.urls')), # Dashboard tetap di root
     path('', include('apps.funnel.urls')), # Tambahkan baris ini
-    path('', include('apps.testing.urls')), # Tambahkan baris ini
+    path('', include('apps.testing.urls')),
+    path('testing2/', include('apps.testing2.urls')),# Tambahkan baris ini
 ]
 
 if settings.DEBUG:

@@ -112,7 +112,6 @@ def registrar_approvals_view(request):
                 dataset.tanggal_approve = timezone.now()
                 dataset.save()
                 messages.success(request, f"Dataset '{dataset.nama_data}' telah disetujui.")
-                # LOGGING: Catat persetujuan
                 create_log_entry(request.user, dataset, CHANGE, f"Menyetujui dataset: {dataset.nama_data}")
             return redirect('users:approvals')
 
@@ -124,10 +123,9 @@ def registrar_approvals_view(request):
                 dataset.tanggal_approve = timezone.now()
                 dataset.save()
                 messages.warning(request, f"Dataset '{dataset.nama_data}' telah ditolak.")
-                # LOGGING: Catat penolakan
                 create_log_entry(request.user, dataset, CHANGE, f"Menolak dataset: {dataset.nama_data}")
             return redirect('users:approvals')
-        
+
         else:
             form = DatasetUploadForm(request.POST, request.FILES)
             if form.is_valid():
@@ -135,15 +133,16 @@ def registrar_approvals_view(request):
                 upload_instance.uploader = request.user
                 upload_instance.save()
                 messages.success(request, "Dataset berhasil diunggah dan sedang menunggu persetujuan.")
-                # LOGGING: Catat upload
                 create_log_entry(request.user, upload_instance, ADDITION, f"Mengunggah dataset baru: {upload_instance.nama_data}")
             else:
                 messages.error(request, "Gagal mengunggah dataset. Periksa kembali isian form.")
             return redirect('users:approvals')
 
+    # 💡 ini dijalankan saat GET atau setelah redirect dari POST
     all_users = User.objects.all().order_by('username')
     upload_form = DatasetUploadForm()
-    all_uploads = DatasetUpload.objects.all().order_by('-tanggal_upload')
+    all_uploads = DatasetUpload.objects.filter(status='PENDING').order_by('-tanggal_upload')
+
     context = {
         'all_users': all_users,
         'upload_form': upload_form,

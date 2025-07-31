@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.funnel',
     'apps.testing',
+    'apps.testing2',
 ]
 
 MIDDLEWARE = [
