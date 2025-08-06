@@ -1,181 +1,814 @@
 {% extends "base.html" %}
-
 {% block title %}Dashboard Visualisasi{% endblock %}
-
 {% block content %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<style>
-    .filter-section { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-    .stats-card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .chart-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    .table-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .nav-tabs .nav-link.active { background-color: #4f46e5 !important; border-color: #4f46e5 !important; color: white !important; }
-    select:disabled { background-color: #e9ecef; opacity: 0.6; cursor: not-allowed; }
-    .stat-number { font-size: 2rem; font-weight: bold; color: #1e3a8a; }
-    .stat-label { font-size: 0.9rem; color: #6b7280; }
-    .loading-spinner { display: none; width: 2rem; height: 2rem; border: 0.25em solid currentColor; border-right-color: transparent; }
-</style>
-
-<div class="container-fluid py-4">
-    <h1 class="mb-4 text-3xl font-bold text-gray-800">Dashboard Pendaftaran</h1>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Visualisasi</title>
     
-    <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="national-tab" data-bs-toggle="tab" data-bs-target="#national" type="button" role="tab">Nasional</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="international-tab" data-bs-toggle="tab" data-bs-target="#international" type="button" role="tab">Internasional</button>
-        </li>
-    </ul>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js & Highcharts for Maps -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/mapdata/countries/id/id-all.js"></script>
+    <script src="https://code.highcharts.com/mapdata/custom/world.js"></script>
 
-    <div class="tab-content" id="dashboardTabContent">
-        <!-- Tab Nasional -->
-        <div class="tab-pane fade show active" id="national" role="tabpanel">
-            <div class="filter-section">
-                <div class="row align-items-end">
-                    <div class="col-md-3">
-                        <label for="yearSelect" class="form-label">Tahun Data</label>
-                        <select class="form-select" id="yearSelect">
-                            <option value="">Pilih Tahun</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="provinceSelect" class="form-label">Provinsi</label>
-                        <select class="form-select" id="provinceSelect" disabled>
-                            <option value="">Pilih Provinsi</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="regencySelect" class="form-label">Kota/Kabupaten</label>
-                        <select class="form-select" id="regencySelect" disabled>
-                            <option value="">Pilih Kota</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 d-grid gap-2">
-                        <button class="btn btn-primary" id="applyFilterBtn">
-                            <span id="applyFilterText">Terapkan Filter</span>
-                            <span class="spinner-border spinner-border-sm loading-spinner" id="applyFilterSpinner"></span>
-                        </button>
-                        <button class="btn btn-secondary" id="resetFilters">Reset Filter</button>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Menggunakan font Inter sebagai default */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        /* Style kustom untuk Highcharts tooltip */
+        .highcharts-tooltip span {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 10px !important;
+            z-index: 9999;
+        }
+        
+        /* Fixed height untuk chart containers */
+        .chart-canvas-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        /* Animasi untuk content muncul */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-loaded {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div class="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard Pendaftaran</h1>
+
+        <!-- Tab Navigation -->
+        <div class="mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-6" id="dashboardTabs">
+                    <button class="tab-button active" data-tab="national">Nasional</button>
+                    <button class="tab-button" data-tab="international">Internasional</button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="dashboardTabContent">
+            <!-- Tab Nasional -->
+            <div id="national" class="tab-content-panel">
+                <!-- Filter Section -->
+                <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                        <div class="w-full">
+                            <label for="yearSelect" class="block text-sm font-medium text-gray-700 mb-1">Tahun Akademik</label>
+                            <select id="yearSelect" class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                <option value="">Pilih Tahun</option>
+                                <option value="8">2022/2023</option>
+                                <option value="9">2023/2024</option>
+                            </select>
+                        </div>
+                        <div class="w-full">
+                            <label for="provinceSelect" class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
+                            <select id="provinceSelect" class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" disabled>
+                                <option value="">Pilih Provinsi</option>
+                            </select>
+                        </div>
+                        <div class="w-full">
+                            <label for="regencySelect" class="block text-sm font-medium text-gray-700 mb-1">Kota/Kabupaten</label>
+                            <select id="regencySelect" class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" disabled>
+                                <option value="">Pilih Kota</option>
+                            </select>
+                        </div>
+                        <div class="w-full lg:col-span-2 flex flex-col sm:flex-row gap-2">
+                            <button id="applyFilterBtn" class="w-full flex items-center justify-center bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 shadow-sm">
+                                <span id="applyFilterText">Terapkan Filter</span>
+                                <div id="applyFilterSpinner" class="hidden spinner ml-2"></div>
+                            </button>
+                            <button id="resetFilters" class="w-full bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 shadow-sm">Reset</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div id="national-content" class="d-none">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="stats-card text-center">
-                            <div class="stat-number" id="totalRegistrants">0</div>
+
+                <!-- Loading State -->
+                <div id="national-loading" class="hidden bg-white p-12 rounded-xl shadow-md mb-6 text-center">
+                    <div class="flex justify-center mb-4">
+                        <div class="spinner-large"></div>
+                    </div>
+                    <p class="text-gray-600">Memuat data nasional...</p>
+                </div>
+
+                <!-- National Content Area -->
+                <div id="national-content" class="hidden space-y-6 content-loaded">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="stat-card">
+                            <div id="totalRegistrants" class="stat-number">0</div>
                             <div class="stat-label">Total Pendaftar</div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stats-card text-center">
-                            <div class="stat-number" id="totalPaid">0</div>
-                            <div class="stat-label">Total Bayar</div>
+                        <div class="stat-card">
+                            <div id="totalPaid" class="stat-number">0</div>
+                            <div class="stat-label">Sudah Bayar</div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stats-card text-center">
-                            <div class="stat-number" id="totalEnrolled">0</div>
-                            <div class="stat-label">Total Enroll</div>
+                        <div class="stat-card">
+                            <div id="totalEnrolled" class="stat-number">0</div>
+                            <div class="stat-label">Sudah Enroll</div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stats-card text-center">
-                            <div class="stat-number" id="enrollmentRate">0%</div>
+                        <div class="stat-card">
+                            <div id="enrollmentRate" class="stat-number">0%</div>
                             <div class="stat-label">Tingkat Enroll</div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="chart-container d-none" id="nationalChartContainer">
-                    <canvas id="nationalChartCanvas"></canvas>
-                </div>
-                
-                <div class="table-container">
-                    <h5 id="tableTitle" class="mb-3">Data Rinci</h5>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr id="tableHead"></tr>
-                            </thead>
-                            <tbody id="tableBody"></tbody>
-                        </table>
+
+                    <!-- National Map -->
+                    <div class="chart-container">
+                        <h5 class="chart-title">Distribusi Pendaftar per Provinsi/Kota (Indonesia)</h5>
+                        <div id="nationalMapContainer" style="height: 500px; width: 100%;"></div>
                     </div>
-                </div>
-                
-                <div class="row mt-4 d-none" id="bottomStatsContainer">
-                    <div class="col-md-6">
+
+                    <!-- Bottom Charts -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div class="chart-container">
-                            <h5>Distribusi Bayar</h5>
-                            <canvas id="paymentChart"></canvas>
+                            <h5 class="chart-title">Status Pembayaran</h5>
+                            <div class="chart-canvas-container">
+                                <canvas id="paymentChart"></canvas>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="chart-container">
-                            <h5>Distribusi Enroll</h5>
-                            <canvas id="enrollmentChart"></canvas>
+                            <h5 class="chart-title">Status Enroll</h5>
+                            <div class="chart-canvas-container">
+                                <canvas id="enrollmentChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Tab Internasional -->
-        <div class="tab-pane fade" id="international" role="tabpanel">
-            <div class="filter-section">
-                <div class="row align-items-end">
-                    <div class="col-md-4">
-                        <label for="intlYearSelect" class="form-label">Tahun Data</label>
-                        <select class="form-select" id="intlYearSelect">
-                            <option value="">Pilih Tahun</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4 d-grid gap-2">
-                        <button class="btn btn-primary" id="applyIntlFilterBtn">
-                            <span id="applyIntlFilterText">Terapkan Filter</span>
-                            <span class="spinner-border spinner-border-sm loading-spinner" id="applyIntlFilterSpinner"></span>
-                        </button>
+
+            <!-- Tab Internasional -->
+            <div id="international" class="tab-content-panel hidden">
+                 <!-- Filter Section -->
+                 <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div>
+                            <label for="intlYearSelect" class="block text-sm font-medium text-gray-700 mb-1">Tahun Akademik</label>
+                            <select id="intlYearSelect" class="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                <option value="">Pilih Tahun</option>
+                                <option value="8">2022/2023</option>
+                                <option value="9">2023/2024</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                             <button id="applyIntlFilterBtn" class="w-full flex items-center justify-center bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 shadow-sm">
+                                <span id="applyIntlFilterText">Terapkan Filter</span>
+                                <div id="applyIntlFilterSpinner" class="hidden spinner ml-2"></div>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div id="international-content" class="d-none">
-                <div class="chart-container">
-                    <h5 class="mb-3">Top 15 Negara Pendaftar</h5>
-                    <div id="intlMapContainer" style="height: 500px; width: 100%;"></div>
+
+                <!-- Loading State -->
+                <div id="international-loading" class="hidden bg-white p-12 rounded-xl shadow-md mb-6 text-center">
+                    <div class="flex justify-center mb-4">
+                        <div class="spinner-large"></div>
+                    </div>
+                    <p class="text-gray-600">Memuat data internasional...</p>
                 </div>
-                
-                <div class="table-container">
-                    <h5 class="mb-3">Data per Negara</h5>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr id="intlTableHead"></tr>
-                            </thead>
-                            <tbody id="intlTableBody"></tbody>
-                        </table>
+
+                <!-- International Content Area -->
+                <div id="international-content" class="hidden space-y-6 content-loaded">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="stat-card">
+                            <div id="intlTotalRegistrants" class="stat-number">0</div>
+                            <div class="stat-label">Total Pendaftar Internasional</div>
+                        </div>
+                        <div class="stat-card">
+                            <div id="intlTotalPaid" class="stat-number">0</div>
+                            <div class="stat-label">Sudah Bayar</div>
+                        </div>
+                    </div>
+
+                    <!-- World Map -->
+                    <div class="chart-container">
+                        <h5 class="chart-title">Distribusi Pendaftar Internasional (Global)</h5>
+                        <div id="internationalMapContainer" style="height: 500px; width: 100%;"></div>
+                    </div>
+
+                    <!-- Top 15 Countries Chart -->
+                    <div class="chart-container">
+                        <h5 class="chart-title">Top 15 Negara Pendaftar</h5>
+                        <div class="chart-canvas-container">
+                            <canvas id="intlBarChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Highcharts MAPS -->
-<script src="https://code.highcharts.com/maps/highmaps.js"></script>
-<script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/mapdata/custom/world.js"></script>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-red-500 text-white py-3 px-6 rounded-lg shadow-xl transform transition-all duration-300 translate-y-20 opacity-0 z-50">
+        <div class="flex items-center">
+            <svg id="toast-icon" class="w-5 h-5 mr-2 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <p id="toast-message">Pesan notifikasi.</p>
+        </div>
+    </div>
 
-<script>
-    let nationalChart, intlChart, paymentChart, enrollmentChart;
+    <!-- Custom CSS for components -->
+    <style>
+        .tab-button {
+            @apply whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors;
+        }
+        .tab-button.active {
+            @apply border-indigo-500 text-indigo-600;
+        }
+        .stat-card {
+            @apply bg-white p-6 rounded-xl shadow-md text-center transition hover:shadow-lg hover:-translate-y-1;
+        }
+        .stat-number {
+            @apply text-3xl md:text-4xl font-extrabold text-indigo-600;
+        }
+        .stat-label {
+            @apply text-sm font-medium text-gray-500 mt-1;
+        }
+        .chart-container {
+            @apply bg-white p-6 rounded-xl shadow-md;
+        }
+        .chart-title {
+            @apply text-lg font-semibold text-gray-800 mb-4;
+        }
+        select:disabled {
+            @apply bg-gray-100 cursor-not-allowed opacity-70;
+        }
+        .spinner {
+            width: 1.25rem; /* w-5 */
+            height: 1.25rem; /* h-5 */
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        .spinner-large {
+            width: 3rem; /* w-12 */
+            height: 3rem; /* h-12 */
+            border: 4px solid rgba(79, 70, 229, 0.1);
+            border-radius: 50%;
+            border-top-color: #4f46e5;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script>
+    // --- CHART INSTANCES ---
+    let paymentChart, enrollmentChart, intlBarChart;
+    let nationalMap, internationalMap;
+
+    // --- UTILITY FUNCTIONS ---
+    /**
+     * Shows a toast notification.
+     * @param {string} message The message to display.
+     * @param {boolean} isError If true, shows a red error toast. Otherwise, green success toast.
+     */
+    function showNotification(message, isError = false) {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        const toastIcon = document.getElementById('toast-icon');
+
+        toastMessage.textContent = message;
+        toast.classList.remove('bg-red-500', 'bg-green-500', 'translate-y-20', 'opacity-0');
+        toast.classList.add(isError ? 'bg-red-500' : 'bg-green-600');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        
+        toastIcon.classList.toggle('hidden', isError);
+        if (!isError) {
+            toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+        }
+
+        setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-20', 'opacity-0');
+        }, 4000);
+    }
+
+    /**
+     * Toggles the loading state of a button.
+     * @param {HTMLButtonElement} button The button element.
+     * @param {boolean} isLoading True to show spinner, false to show text.
+     */
+    function toggleButtonLoading(button, isLoading) {
+        const textElement = button.querySelector('span');
+        const spinnerElement = button.querySelector('.spinner');
+        if (isLoading) {
+            textElement.classList.add('hidden');
+            spinnerElement.classList.remove('hidden');
+            button.disabled = true;
+        } else {
+            textElement.classList.remove('hidden');
+            spinnerElement.classList.add('hidden');
+            button.disabled = false;
+        }
+    }
+
+    /**
+     * Toggles the loading state of a content section.
+     * @param {string} tab 'national' or 'international'
+     * @param {boolean} isLoading True to show loading, false to hide
+     */
+    function toggleContentLoading(tab, isLoading) {
+        const loadingElement = document.getElementById(`${tab}-loading`);
+        const contentElement = document.getElementById(`${tab}-content`);
+        
+        if (isLoading) {
+            loadingElement.classList.remove('hidden');
+            contentElement.classList.add('hidden');
+        } else {
+            loadingElement.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Builds a URL query string from a params object.
+     * @param {object} params Key-value pairs.
+     * @returns {string} The formatted query string.
+     */
+    function buildQueryString(params) {
+        return Object.entries(params)
+            .filter(([_, v]) => v) // Filter out empty values
+            .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+            .join('&');
+    }
+
+    /**
+     * Renders or updates a Chart.js chart.
+     * @param {Chart} chartInstance The existing chart instance (can be null).
+     * @param {string} canvasId The ID of the canvas element.
+     * @param {object} config The Chart.js configuration object.
+     * @returns {Chart} The new chart instance.
+     */
+    function renderChart(chartInstance, canvasId, config) {
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        return new Chart(ctx, config);
+    }
     
+    // --- API & DATA LOADING FUNCTIONS ---
+    async function fetchData(url, buttonElement, tab) {
+        toggleButtonLoading(buttonElement, true);
+        toggleContentLoading(tab, true);
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Fetch Error:', error);
+            showNotification(`Gagal memuat data: ${error.message}`, true);
+            return null;
+        } finally {
+            toggleButtonLoading(buttonElement, false);
+            toggleContentLoading(tab, false);
+        }
+    }
+
+    async function loadNationalData() {
+        const year = document.getElementById('yearSelect').value;
+        if (!year) {
+            showNotification('Pilih tahun akademik terlebih dahulu.', true);
+            return;
+        }
+        
+        const params = {
+            year: year,
+            province_id: document.getElementById('provinceSelect').value,
+            regency_id: document.getElementById('regencySelect').value
+        };
+        // PENTING: Ganti URL ini dengan URL API Django Anda
+        const url = `/api/data/national?${buildQueryString(params)}`;
+        
+        const data = await fetchData(url, document.getElementById('applyFilterBtn'), 'national');
+        if (data) {
+            document.getElementById('national-content').classList.remove('hidden');
+            updateNationalStats(data.statistics);
+            updateNationalMap(data.map_data);
+            updateBottomCharts(data.statistics);
+            showNotification('Data nasional berhasil dimuat.', false);
+        }
+    }
+
+    async function loadInternationalData() {
+        const year = document.getElementById('intlYearSelect').value;
+        if (!year) {
+            showNotification('Pilih tahun akademik terlebih dahulu.', true);
+            return;
+        }
+        // PENTING: Ganti URL ini dengan URL API Django Anda
+        const url = `/api/data/international?year=${year}`;
+
+        const data = await fetchData(url, document.getElementById('applyIntlFilterBtn'), 'international');
+        if (data) {
+            document.getElementById('international-content').classList.remove('hidden');
+            updateInternationalStats(data.statistics);
+            updateInternationalMap(data.map_data);
+            updateIntlBarChart(data.top_countries);
+            showNotification('Data internasional berhasil dimuat.', false);
+        }
+    }
+
+    async function updateDropdown(selectElement, url, placeholder) {
+        selectElement.innerHTML = `<option value="">Memuat...</option>`;
+        selectElement.disabled = true;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+            const key = Object.keys(data)[0]; // e.g., 'provinces' or 'regencies'
+            data[key].forEach(item => {
+                selectElement.add(new Option(item.name, item.id));
+            });
+            selectElement.disabled = false;
+        } catch (error) {
+            console.error('Dropdown fetch error:', error);
+            selectElement.innerHTML = `<option value="">Gagal memuat</option>`;
+            showNotification('Gagal memuat data dropdown.', true);
+        }
+    }
+
+    // --- UI UPDATE FUNCTIONS ---
+    function updateNationalStats(stats) {
+        document.getElementById('totalRegistrants').textContent = stats.total_registrants?.toLocaleString() || 0;
+        document.getElementById('totalPaid').textContent = stats.total_paid?.toLocaleString() || 0;
+        document.getElementById('totalEnrolled').textContent = stats.total_enrolled?.toLocaleString() || 0;
+        document.getElementById('enrollmentRate').textContent = `${stats.enrollment_rate || 0}%`;
+    }
+    
+    function updateInternationalStats(stats) {
+        document.getElementById('intlTotalRegistrants').textContent = stats.total?.toLocaleString() || 0;
+        document.getElementById('intlTotalPaid').textContent = stats.paid?.toLocaleString() || 0;
+    }
+
+    function updateNationalMap(mapData) {
+        // Destroy previous map if exists
+        if (nationalMap) {
+            nationalMap.destroy();
+        }
+        
+        nationalMap = Highcharts.mapChart('nationalMapContainer', {
+            chart: { 
+                map: 'countries/id/id-all', 
+                backgroundColor: 'transparent',
+                height: 500
+            },
+            title: { text: null },
+            credits: { enabled: false },
+            mapNavigation: { 
+                enabled: true, 
+                buttonOptions: { 
+                    verticalAlign: 'bottom',
+                    theme: {
+                        fill: 'white',
+                        stroke: '#e2e8f0',
+                        'stroke-width': 1,
+                        r: 4,
+                        style: {
+                            color: '#4b5563'
+                        },
+                        states: {
+                            hover: {
+                                fill: '#f3f4f6'
+                            },
+                            select: {
+                                fill: '#e5e7eb',
+                                stroke: '#d1d5db',
+                                style: {
+                                    color: '#1f2937'
+                                }
+                            }
+                        }
+                    }
+                } 
+            },
+            colorAxis: { 
+                min: 0, 
+                minColor: '#e0f7fa',
+                maxColor: '#00838f',
+                labels: {
+                    style: {
+                        color: '#6b7280',
+                        fontSize: '11px'
+                    }
+                }
+            },
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom',
+                itemStyle: {
+                    color: '#4b5563',
+                    fontWeight: 'normal'
+                }
+            },
+            tooltip: { 
+                headerFormat: '', 
+                pointFormat: '<b>{point.name}</b>: {point.value} pendaftar',
+                style: {
+                    fontSize: '13px'
+                }
+            },
+            series: [{
+                data: mapData,
+                joinBy: ['hc-key', 'hc-key'],
+                name: 'Pendaftar',
+                states: { 
+                    hover: { 
+                        color: '#f59e0b',
+                        borderColor: '#d97706',
+                        brightness: 0
+                    } 
+                },
+                dataLabels: { 
+                    enabled: false 
+                },
+                borderColor: '#e5e7eb',
+                borderWidth: 0.5
+            }]
+        });
+    }
+
+    function updateInternationalMap(mapData) {
+        // Destroy previous map if exists
+        if (internationalMap) {
+            internationalMap.destroy();
+        }
+        
+        internationalMap = Highcharts.mapChart('internationalMapContainer', {
+            chart: { 
+                map: 'custom/world', 
+                backgroundColor: 'transparent',
+                height: 500
+            },
+            title: { text: null },
+            credits: { enabled: false },
+            mapNavigation: { 
+                enabled: true, 
+                buttonOptions: { 
+                    verticalAlign: 'bottom',
+                    theme: {
+                        fill: 'white',
+                        stroke: '#e2e8f0',
+                        'stroke-width': 1,
+                        r: 4,
+                        style: {
+                            color: '#4b5563'
+                        },
+                        states: {
+                            hover: {
+                                fill: '#f3f4f6'
+                            },
+                            select: {
+                                fill: '#e5e7eb',
+                                stroke: '#d1d5db',
+                                style: {
+                                    color: '#1f2937'
+                                }
+                            }
+                        }
+                    }
+                } 
+            },
+            colorAxis: { 
+                min: 0, 
+                minColor: '#f3e5f5',
+                maxColor: '#6a1b9a',
+                labels: {
+                    style: {
+                        color: '#6b7280',
+                        fontSize: '11px'
+                    }
+                }
+            },
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom',
+                itemStyle: {
+                    color: '#4b5563',
+                    fontWeight: 'normal'
+                }
+            },
+            tooltip: { 
+                pointFormat: '<b>{point.name}</b>: {point.value} pendaftar',
+                style: {
+                    fontSize: '13px'
+                }
+            },
+            series: [{
+                data: mapData,
+                joinBy: ['iso-a2', 'code'],
+                name: 'Pendaftar',
+                states: { 
+                    hover: { 
+                        color: '#f59e0b',
+                        borderColor: '#d97706',
+                        brightness: 0
+                    } 
+                },
+                borderColor: '#e5e7eb',
+                borderWidth: 0.5
+            }]
+        });
+    }
+
+    function updateBottomCharts(stats) {
+        const paid = stats.total_paid || 0;
+        const unpaid = (stats.total_registrants || 0) - paid;
+        const enrolled = stats.total_enrolled || 0;
+        const notEnrolled = paid - enrolled;
+
+        paymentChart = renderChart(paymentChart, 'paymentChart', {
+            type: 'doughnut',
+            data: {
+                labels: ['Sudah Bayar', 'Belum Bayar'],
+                datasets: [{ 
+                    data: [paid, unpaid], 
+                    backgroundColor: ['#4fd1c5', '#fc8181'],
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    hoverBorderColor: '#fff'
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                cutout: '70%',
+                plugins: { 
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: {
+                                family: 'Inter',
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        bodyFont: {
+                            family: 'Inter',
+                            size: 13
+                        },
+                        titleFont: {
+                            family: 'Inter',
+                            size: 13
+                        }
+                    }
+                } 
+            }
+        });
+
+        enrollmentChart = renderChart(enrollmentChart, 'enrollmentChart', {
+            type: 'doughnut',
+            data: {
+                labels: ['Sudah Enroll', 'Belum Enroll (dari yg sudah bayar)'],
+                datasets: [{ 
+                    data: [enrolled, notEnrolled], 
+                    backgroundColor: ['#f6ad55', '#9f7aea'],
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    hoverBorderColor: '#fff'
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                cutout: '70%',
+                plugins: { 
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: {
+                                family: 'Inter',
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        bodyFont: {
+                            family: 'Inter',
+                            size: 13
+                        },
+                        titleFont: {
+                            family: 'Inter',
+                            size: 13
+                        }
+                    }
+                } 
+            }
+        });
+    }
+
+    function updateIntlBarChart(data) {
+        const labels = data.map(d => d.country);
+        const values = data.map(d => d.count);
+
+        intlBarChart = renderChart(intlBarChart, 'intlBarChart', {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Jumlah Pendaftar',
+                    data: values,
+                    backgroundColor: 'rgba(79, 70, 229, 0.7)', // indigo-600 with opacity
+                    borderColor: 'rgba(79, 70, 229, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Membuat bar chart horizontal agar mudah dibaca
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { 
+                    x: { 
+                        beginAtZero: true,
+                        grid: {
+                            display: true,
+                            drawBorder: false,
+                            color: '#e5e7eb'
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                },
+                plugins: { 
+                    legend: { 
+                        display: false 
+                    },
+                    tooltip: {
+                        bodyFont: {
+                            family: 'Inter',
+                            size: 13
+                        },
+                        titleFont: {
+                            family: 'Inter',
+                            size: 13
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // --- EVENT LISTENERS ---
     document.addEventListener('DOMContentLoaded', function() {
-        // Elemen DOM
+        // --- Element References ---
         const yearSelect = document.getElementById('yearSelect');
         const provinceSelect = document.getElementById('provinceSelect');
         const regencySelect = document.getElementById('regencySelect');
@@ -183,326 +816,65 @@
         const applyBtn = document.getElementById('applyFilterBtn');
         const applyIntlBtn = document.getElementById('applyIntlFilterBtn');
         const resetBtn = document.getElementById('resetFilters');
-        
-        // Load tahun data
-        fetch("{% url 'dashboard:api_years' %}")
-            .then(res => res.json())
-            .then(data => {
-                data.years.forEach(year => {
-                    yearSelect.add(new Option(year.label, year.value));
-                    intlYearSelect.add(new Option(year.label, year.value));
-                });
-            });
-        
-        // Event listeners
+        const tabsContainer = document.getElementById('dashboardTabs');
+        const tabContents = {
+            national: document.getElementById('national'),
+            international: document.getElementById('international')
+        };
+
+        // --- Tab Switching Logic ---
+        tabsContainer.addEventListener('click', (e) => {
+            if (e.target.matches('.tab-button')) {
+                // Deactivate all buttons and hide all content
+                tabsContainer.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                Object.values(tabContents).forEach(content => content.classList.add('hidden'));
+
+                // Activate clicked button and show its content
+                e.target.classList.add('active');
+                const tabName = e.target.dataset.tab;
+                tabContents[tabName].classList.remove('hidden');
+            }
+        });
+
+        // --- Filter Logic ---
         yearSelect.addEventListener('change', () => {
-            provinceSelect.value = '';
             regencySelect.innerHTML = '<option value="">Pilih Kota</option>';
             regencySelect.disabled = true;
-            updateProvinceDropdown();
+            if (yearSelect.value) {
+                // PENTING: Ganti URL ini dengan URL API Django Anda
+                updateDropdown(provinceSelect, '/api/provinces', 'Pilih Provinsi');
+            } else {
+                provinceSelect.innerHTML = '<option value="">Pilih Provinsi</option>';
+                provinceSelect.disabled = true;
+            }
         });
-        
+
         provinceSelect.addEventListener('change', () => {
-            regencySelect.value = '';
-            updateRegencyDropdown();
+            if (provinceSelect.value) {
+                // PENTING: Ganti URL ini dengan URL API Django Anda
+                const url = `/api/regencies?province_id=${provinceSelect.value}`;
+                updateDropdown(regencySelect, url, 'Pilih Kota/Kabupaten');
+            } else {
+                regencySelect.innerHTML = '<option value="">Pilih Kota</option>';
+                regencySelect.disabled = true;
+            }
         });
-        
-        intlYearSelect.addEventListener('change', () => {
-            document.getElementById('international-content').classList.add('d-none');
-        });
-        
-        applyBtn.addEventListener('click', () => {
-            const spinner = document.getElementById('applyFilterSpinner');
-            const text = document.getElementById('applyFilterText');
-            
-            spinner.style.display = 'inline-block';
-            text.style.display = 'none';
-            
-            loadNationalData().finally(() => {
-                spinner.style.display = 'none';
-                text.style.display = 'inline';
-            });
-        });
-        
-        applyIntlBtn.addEventListener('click', () => {
-            const spinner = document.getElementById('applyIntlFilterSpinner');
-            const text = document.getElementById('applyIntlFilterText');
-            
-            spinner.style.display = 'inline-block';
-            text.style.display = 'none';
-            
-            loadInternationalData().finally(() => {
-                spinner.style.display = 'none';
-                text.style.display = 'inline';
-            });
-        });
-        
+
+        applyBtn.addEventListener('click', loadNationalData);
+        applyIntlBtn.addEventListener('click', loadInternationalData);
+
         resetBtn.addEventListener('click', () => {
             yearSelect.value = '';
             provinceSelect.innerHTML = '<option value="">Pilih Provinsi</option>';
             regencySelect.innerHTML = '<option value="">Pilih Kota</option>';
             provinceSelect.disabled = true;
             regencySelect.disabled = true;
-            document.getElementById('national-content').classList.add('d-none');
+            document.getElementById('national-content').classList.add('hidden');
+            showNotification('Filter telah direset.', false);
         });
     });
-    
-    function buildQueryString(params) {
-        return Object.entries(params)
-            .filter(([_, value]) => value)
-            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-            .join('&');
-    }
-    
-    async function loadNationalData() {
-        const params = {
-            year: document.getElementById('yearSelect').value,
-            province_id: document.getElementById('provinceSelect').value,
-            regency_id: document.getElementById('regencySelect').value
-        };
-        
-        if (!params.year) {
-            alert('Silakan pilih tahun data terlebih dahulu.');
-            return;
-        }
-        
-        try {
-            const response = await fetch(`{% url 'dashboard:api_data_national' %}?${buildQueryString(params)}`);
-            const data = await response.json();
-            
-            document.getElementById('national-content').classList.remove('d-none');
-            
-            // Update statistik
-            updateNationalStats(data.statistics);
-            
-            // Update tabel
-            updateNationalTable(data.table_data);
-            
-            // Update visualisasi
-            updateNationalVisualization(data.visualization);
-            
-            // Tampilkan chart tambahan jika level kota/kabupaten
-            if(params.regency_id) {
-                document.getElementById('bottomStatsContainer').classList.remove('d-none');
-                updateBottomCharts(data.statistics);
-            } else {
-                document.getElementById('bottomStatsContainer').classList.add('d-none');
-            }
-            
-        } catch (error) {
-            console.error('Error loading national data:', error);
-            alert('Terjadi kesalahan saat memuat data. Silakan coba lagi.');
-        }
-    }
-    
-    async function loadInternationalData() {
-        const params = {
-            year: document.getElementById('intlYearSelect').value
-        };
-        
-        if (!params.year) {
-            alert('Silakan pilih tahun data terlebih dahulu.');
-            return;
-        }
-        
-        try {
-            const response = await fetch(`{% url 'dashboard:api_data_international' %}?${buildQueryString(params)}`);
-            const data = await response.json();
-            
-            document.getElementById('international-content').classList.remove('d-none');
-            updateInternationalTable(data.table_data);
-            updateInternationalVisualization(data.visualization);
-            
-        } catch (error) {
-            console.error('Error loading international data:', error);
-            alert('Terjadi kesalahan saat memuat data internasional. Silakan coba lagi.');
-        }
-    }
-    
-    function updateProvinceDropdown() {
-        const provinceSelect = document.getElementById('provinceSelect');
-        
-        fetch(`{% url 'dashboard:api_provinces' %}`)
-            .then(res => res.json())
-            .then(data => {
-                provinceSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
-                data.provinces.forEach(p => provinceSelect.add(new Option(p.name, p.id)));
-                provinceSelect.disabled = false;
-            });
-    }
-    
-    function updateRegencyDropdown() {
-        const regencySelect = document.getElementById('regencySelect');
-        const provinceId = document.getElementById('provinceSelect').value;
-        
-        if (!provinceId) {
-            regencySelect.disabled = true;
-            return;
-        }
-        
-        fetch(`{% url 'dashboard:api_regencies' %}?province_id=${provinceId}`)
-            .then(res => res.json())
-            .then(data => {
-                regencySelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
-                data.regencies.forEach(r => regencySelect.add(new Option(r.name, r.id)));
-                regencySelect.disabled = false;
-            });
-    }
-    
-    function updateNationalStats(stats) {
-        document.getElementById('totalRegistrants').textContent = stats.total_registrants.toLocaleString();
-        document.getElementById('totalPaid').textContent = stats.total_paid.toLocaleString();
-        document.getElementById('totalEnrolled').textContent = stats.total_enrolled.toLocaleString();
-        document.getElementById('enrollmentRate').textContent = stats.enrollment_rate + '%';
-    }
-    
-    function updateNationalTable(tableData) {
-        const tHead = document.getElementById('tableHead');
-        const tBody = document.getElementById('tableBody');
-        
-        tHead.innerHTML = `<tr>${tableData.headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
-        tBody.innerHTML = tableData.rows.map(row => 
-            `<tr>${row.map(cell => `<td>${cell || '-'}</td>`).join('')}</tr>`
-        ).join('');
-    }
-    
-    function updateInternationalTable(tableData) {
-        const tHead = document.getElementById('intlTableHead');
-        const tBody = document.getElementById('intlTableBody');
-        
-        tHead.innerHTML = `<tr>${tableData.headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
-        tBody.innerHTML = tableData.rows.map(row => 
-            `<tr>${row.map(cell => `<td>${cell || '-'}</td>`).join('')}</tr>`
-        ).join('');
-    }
-    
-    function renderChart(chartInstance, canvasId, config) {
-        if(chartInstance) chartInstance.destroy();
-        return new Chart(document.getElementById(canvasId).getContext('2d'), config);
-    }
-    
-    function updateNationalVisualization(viz) {
-        const container = document.getElementById('nationalChartContainer');
-        
-        if(viz.type === 'none') {
-            container.classList.add('d-none');
-            return;
-        }
-        
-        container.classList.remove('d-none');
-        
-        nationalChart = renderChart(nationalChart, 'nationalChartCanvas', {
-            type: viz.type,
-            data: {
-                labels: viz.data.map(d => d.name),
-                datasets: [{
-                    data: viz.data.map(d => d.value),
-                    backgroundColor: [
-                        '#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', 
-                        '#9966FF', '#FF9F40', '#8AC24A', '#607D8B',
-                        '#9C27B0', '#E91E63'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: viz.type === 'bar' ? 'y' : 'x',
-                plugins: {
-                    legend: {
-                        position: viz.type === 'bar' ? 'right' : 'bottom'
-                    }
-                }
-            }
-        });
-    }
-    
-    function updateInternationalVisualization(viz) {
-        Highcharts.mapChart('intlMapContainer', {
-            chart: {
-                map: 'custom/world',
-                height: '500px'
-            },
-            title: {
-                text: 'Distribusi Pendaftar Internasional'
-            },
-            subtitle: {
-                text: 'Berdasarkan negara asal'
-            },
-            mapNavigation: {
-                enabled: true,
-                buttonOptions: {
-                    verticalAlign: 'bottom'
-                }
-            },
-            colorAxis: {
-                min: 0,
-                stops: [
-                    [0, '#EFEFFF'],
-                    [0.5, '#447BB2'],
-                    [1, '#000022']
-                ]
-            },
-            tooltip: {
-                headerFormat: '<span style="font-size:10px">{point.key}</span><br/>',
-                pointFormat: '<b>{point.value}</b> pendaftar'
-            },
-            series: [{
-                data: viz.data,
-                name: 'Jumlah Pendaftar',
-                joinBy: ['iso-a2', 'code'],
-                states: {
-                    hover: {
-                        color: '#BADA55'
-                    }
-                }
-            }]
-        });
-    }
-    
-    function updateBottomCharts(stats) {
-        // Chart pembayaran
-        paymentChart = renderChart(paymentChart, 'paymentChart', {
-            type: 'doughnut',
-            data: {
-                labels: ['Sudah Bayar', 'Belum Bayar'],
-                datasets: [{
-                    data: [stats.total_paid, stats.total_registrants - stats.total_paid],
-                    backgroundColor: ['#4BC0C0', '#FF6384'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-        
-        // Chart enrollment
-        enrollmentChart = renderChart(enrollmentChart, 'enrollmentChart', {
-            type: 'doughnut',
-            data: {
-                labels: ['Sudah Enroll', 'Belum Enroll (dari yg sudah bayar)'],
-                datasets: [{
-                    data: [stats.total_enrolled, stats.total_paid - stats.total_enrolled],
-                    backgroundColor: ['#FFCE56', '#9966FF'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-</script>
+    </script>
+</body>
+</html>
+
 {% endblock %}
